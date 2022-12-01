@@ -23,6 +23,7 @@ public class Gym {
     private String location;
     @Column(name = "schedule")
     private String schedule;
+    @Lob
     @Column(name = "description")
     private String description;
 

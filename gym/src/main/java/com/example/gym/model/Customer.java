@@ -1,14 +1,13 @@
 package com.example.gym.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "customers")
@@ -24,12 +23,7 @@ public class Customer {
     private String surname;
     @Column(name = "birthday")
     private Date birthday;
-    @Column(name = "difficulty_level")
-    private String difficulty_level;
-    @Column(name = "time_date")
-    private Date time_date;
-
-    @Column(name = "gender")//smallint
+    @Column(name = "gender")
     @Enumerated(EnumType.ORDINAL)
     private Gender gender;
     @Column(name = "phone_number")
@@ -44,5 +38,8 @@ public class Customer {
             joinColumns = { @JoinColumn(name = "costumer_id")},
             inverseJoinColumns = {@JoinColumn(name = "session_id")})
     private List<Session> sessions;
+
+
+
 
 }

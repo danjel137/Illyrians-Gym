@@ -39,6 +39,8 @@ public class SessionService {
         existingSession.setDescription(session.getDescription());
         existingSession.setTitle(session.getTitle());
         existingSession.setSession_type(session.getSession_type());
+        existingSession.setDifficultyLevel(session.getDifficultyLevel());
+        existingSession.setTime(session.getTime());
         existingSession.setDuration(session.getDuration());
         existingSession.setRate(session.getRate());
         Session updatedSession = sessionRepository.save(session);

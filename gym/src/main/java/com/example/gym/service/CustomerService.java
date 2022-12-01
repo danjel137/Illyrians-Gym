@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 
 @Service
-
 public class CustomerService {
     private  final CustomerRepository customerRepository;
 
@@ -40,8 +39,6 @@ public class CustomerService {
         existingCustomer.setName(customer.getName());
         existingCustomer.setSurname(customer.getSurname());
         existingCustomer.setBirthday(customer.getBirthday());
-        existingCustomer.setDifficulty_level(customer.getDifficulty_level());
-        existingCustomer.setTime_date(customer.getTime_date());
         existingCustomer.setGender(customer.getGender());
         existingCustomer.setPhone_number(customer.getPhone_number());
         existingCustomer.setStatus(customer.isStatus());
