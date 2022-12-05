@@ -17,5 +17,5 @@ public class Session  implements Serializable {
     int length;
     String timeDate;
     int starReviews;
-    int numSubscribedCustomer;
+    int numParticipants;
 }

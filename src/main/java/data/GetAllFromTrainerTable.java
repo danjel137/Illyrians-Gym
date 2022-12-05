@@ -9,7 +9,10 @@ import org.apache.beam.sdk.values.PCollection;
 import java.sql.ResultSet;
 
 public class GetAllFromTrainerTable {
-    public PCollection<Trainer> get(Pipeline pipeline) {
+    private GetAllFromTrainerTable() {
+    }
+
+    public static PCollection<Trainer> get(Pipeline pipeline) {
         String postgresDriver = "org.postgresql.Driver";
         String hostname = "jdbc:postgresql://" + System.getenv("hostAndDbName");
 

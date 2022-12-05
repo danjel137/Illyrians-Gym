@@ -4,15 +4,15 @@ import model.Gym;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.coders.SerializableCoder;
 import org.apache.beam.sdk.io.jdbc.JdbcIO;
-import org.apache.beam.sdk.transforms.DoFn;
-import org.apache.beam.sdk.values.PBegin;
 import org.apache.beam.sdk.values.PCollection;
 
 import java.sql.ResultSet;
 
-public class GetAllFromGymTable extends DoFn<PBegin,PCollection<Gym>> {
+public class GetAllFromGymTable {
+    private GetAllFromGymTable() {
+    }
 
-    public PCollection<Gym> get(Pipeline pipeline) {
+    public static PCollection<Gym> get(Pipeline pipeline) {
         String postgresDriver = "org.postgresql.Driver";
         String hostname = "jdbc:postgresql://" + System.getenv("hostAndDbName");
 

@@ -4,14 +4,14 @@ import model.Customer;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.coders.SerializableCoder;
 import org.apache.beam.sdk.io.jdbc.JdbcIO;
-import org.apache.beam.sdk.transforms.DoFn;
-import org.apache.beam.sdk.values.PBegin;
 import org.apache.beam.sdk.values.PCollection;
 
 import java.sql.ResultSet;
 
-public class GetAllFromCustomerTable extends DoFn<PBegin, PCollection<Customer>> {
-    public PCollection<Customer> get(Pipeline pipeline) {
+public class GetAllFromCustomerTable {
+    private GetAllFromCustomerTable() {
+    }
+    public static PCollection<Customer> get(Pipeline pipeline) {
         String postgresDriver = "org.postgresql.Driver";
         String hostname = "jdbc:postgresql://" + System.getenv("hostAndDbName");
 
@@ -20,7 +20,7 @@ public class GetAllFromCustomerTable extends DoFn<PBegin, PCollection<Customer>>
                                 postgresDriver, hostname)
                         .withUsername("postgres")
                         .withPassword(System.getenv("postgresPASSWORD")))
-                .withQuery("select * from customer;")
+                .withQuery("select * from customers;")
                 .withCoder(SerializableCoder.of(Customer.class))
                 .withRowMapper(new JdbcIO.RowMapper<Customer>() {
                     public Customer mapRow(ResultSet resultSet) throws Exception {

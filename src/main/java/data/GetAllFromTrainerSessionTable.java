@@ -1,6 +1,5 @@
 package data;
 
-import model.CustomerSession;
 import model.TrainerSession;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.coders.SerializableCoder;
@@ -10,7 +9,10 @@ import org.apache.beam.sdk.values.PCollection;
 import java.sql.ResultSet;
 
 public class GetAllFromTrainerSessionTable {
-    public PCollection<TrainerSession> get(Pipeline pipeline) {
+    private GetAllFromTrainerSessionTable() {
+    }
+
+    public static PCollection<TrainerSession> get(Pipeline pipeline) {
         String postgresDriver = "org.postgresql.Driver";
         String hostname = "jdbc:postgresql://" + System.getenv("hostAndDbName");
 
