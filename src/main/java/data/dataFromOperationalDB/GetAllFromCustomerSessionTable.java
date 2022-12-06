@@ -1,7 +1,7 @@
-package data;
+package data.dataFromOperationalDB;
 
 
-import model.CustomerSession;
+import model.operationalDatabase.CustomerSession;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.coders.SerializableCoder;
 import org.apache.beam.sdk.io.jdbc.JdbcIO;

@@ -1,6 +1,6 @@
-package data;
+package data.dataFromOperationalDB;
 
-import model.Session;
+import model.operationalDatabase.Customer;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.coders.SerializableCoder;
 import org.apache.beam.sdk.io.jdbc.JdbcIO;
@@ -8,33 +8,29 @@ import org.apache.beam.sdk.values.PCollection;
 
 import java.sql.ResultSet;
 
-public class GetAllFromSessionTable {
-    private GetAllFromSessionTable() {
+public class GetAllFromCustomerTable {
+    private GetAllFromCustomerTable() {
     }
-
-    public static PCollection<Session> get(Pipeline pipeline) {
+    public static PCollection<Customer> get(Pipeline pipeline) {
         String postgresDriver = "org.postgresql.Driver";
         String hostname = "jdbc:postgresql://" + System.getenv("hostAndDbName");
 
-        return pipeline.apply(JdbcIO.<Session>read()
+        return pipeline.apply(JdbcIO.<Customer>read()
                 .withDataSourceConfiguration(JdbcIO.DataSourceConfiguration.create(
                                 postgresDriver, hostname)
                         .withUsername("postgres")
                         .withPassword(System.getenv("postgresPASSWORD")))
-                .withQuery("select * from session;")
-                .withCoder(SerializableCoder.of(Session.class))
-                .withRowMapper(new JdbcIO.RowMapper<Session>() {
-                    public Session mapRow(ResultSet resultSet) throws Exception {
-                        return new Session(
-                                resultSet.getInt(1),
+                .withQuery("select * from customers;")
+                .withCoder(SerializableCoder.of(Customer.class))
+                .withRowMapper(new JdbcIO.RowMapper<Customer>() {
+                    public Customer mapRow(ResultSet resultSet) throws Exception {
+                        return new Customer(resultSet.getInt(1),
                                 resultSet.getString(2),
                                 resultSet.getString(3),
                                 resultSet.getString(4),
-                                resultSet.getInt(5),
-                                resultSet.getInt(6),
-                                resultSet.getString(7),
-                                resultSet.getInt(8),
-                                resultSet.getInt(9)
+                                resultSet.getString(5),
+                                resultSet.getString(6),
+                                resultSet.getString(7)
                         );
                     }
                 })

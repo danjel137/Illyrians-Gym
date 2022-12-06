@@ -1,6 +1,6 @@
-package data;
+package data.dataFromOperationalDB;
 
-import model.TrainerSession;
+import model.operationalDatabase.TrainerSession;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.coders.SerializableCoder;
 import org.apache.beam.sdk.io.jdbc.JdbcIO;

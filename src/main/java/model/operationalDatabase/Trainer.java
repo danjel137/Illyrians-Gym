@@ -1,4 +1,4 @@
-package model;
+package model.operationalDatabase;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,21 +1,22 @@
-package model;
+package model.operationalDatabase;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Session  implements Serializable {
+public class Session implements Serializable {
     int sessionId;
-    String title;
     String description;
+    String title;
     String type;
-    int difficultyLevel;
-    int length;
+    String difficultyLevel;
     String timeDate;
-    int starReviews;
     int numParticipants;
+    int length;
+    int starReviews;
 }

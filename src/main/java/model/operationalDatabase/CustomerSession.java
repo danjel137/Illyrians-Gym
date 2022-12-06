@@ -1,4 +1,4 @@
-package model;
+package model.operationalDatabase;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,12 +9,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Customer implements Serializable {
+public class CustomerSession  implements Serializable {
     int customerId;
-    String name;
-    String surname;
-    String birthday;
-    String gender;
-    String phoneNumber;
-    String status;
+    int sessionId;
 }
