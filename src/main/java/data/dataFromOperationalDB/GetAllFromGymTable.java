@@ -31,7 +31,6 @@ public class GetAllFromGymTable {
                                 resultSet.getString(4),
                                 resultSet.getString(5));
                     }
-                })
-        );
+                }));
     }
 }

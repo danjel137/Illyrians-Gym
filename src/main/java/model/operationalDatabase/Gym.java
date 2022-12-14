@@ -9,10 +9,10 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Gym  implements Serializable {
-   int gymId;
-   String gymName;
-   String location;
-   String description;
-   String schedule;
+public class Gym implements Serializable {
+    int gymId;
+    String gymName;
+    String location;
+    String schedule;
+    String description;
 }

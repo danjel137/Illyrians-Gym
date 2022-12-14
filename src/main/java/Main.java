@@ -1,7 +1,7 @@
-import data.dataFromOperationalDB.GetAllFromCustomerSessionTable;
+import data.dataFromOperationalDB.GetAllFromUserSessionTable;
 import data.dataFromOperationalDB.GetAllFromSessionTable;
-import model.operationalDatabase.CustomerSession;
 import model.operationalDatabase.Session;
+import model.operationalDatabase.UserSession;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
@@ -10,16 +10,17 @@ import org.apache.beam.sdk.transforms.ParDo;
 
 import java.util.Objects;
 
+
 public class Main {
     public static void main(String[] args) {
+
         PipelineOptions options = PipelineOptionsFactory.create();
         Pipeline pipeline = Pipeline.create(options);
 
+        //Todo build the class that manages extraction only for data that is not processed yet from database
 
-        //Todo build the class that manages extarcting only data that is not processed yet from database
-
-        GetAllFromCustomerSessionTable.get(pipeline)
-                .apply(ParDo.of(new DoFn<CustomerSession, Void>() {
+        GetAllFromUserSessionTable.get(pipeline)
+                .apply(ParDo.of(new DoFn<UserSession, Void>() {
                     @ProcessElement
                     public void processElement(ProcessContext context) {
                         System.out.println(Objects.requireNonNull(context.element()).toString());
@@ -31,7 +32,7 @@ public class Main {
                 .apply(ParDo.of(new DoFn<Session, Void>() {
                     @ProcessElement
                     public void processElement(ProcessContext context) {
-                        System.out.println(context.element().getTimeDate());
+                        System.out.println("Start time " + context.element().getStartTime());
                     }
                 }));
         pipeline.run();

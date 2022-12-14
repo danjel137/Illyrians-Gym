@@ -31,10 +31,9 @@ public class GetAllFromSessionTable {
                                 resultSet.getString(3),
                                 resultSet.getString(4),
                                 resultSet.getString(5),
-                                resultSet.getString(6),
                                 resultSet.getInt(7),
                                 resultSet.getInt(8),
-                                resultSet.getInt(9)
+                                resultSet.getString(9)
                         );
                     }
                 })

@@ -9,7 +9,9 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TrainerSession  implements Serializable {
-    int trainer_id;
-    int session_id;
+public class UserSession implements Serializable {
+    int userId;
+    int sessionId;
+    double rate;
+    String dateRegisteredSession;
 }

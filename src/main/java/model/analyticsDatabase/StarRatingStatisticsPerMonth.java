@@ -7,12 +7,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class StarReviewStatisticsPerMonth {
+public class StarRatingStatisticsPerMonth {
     private int id;
     private int year;
     private int month;
-    private short minStar;
-    private short maxStar;
-    private float meanStar;
-    private float averageStar;
+    private double minStar;
+    private double maxStar;
+    private double medianStar;
+    private double averageStar;
 }
