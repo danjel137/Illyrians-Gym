@@ -20,12 +20,19 @@ public class StarRatingStatisticsPerMonthAnalytics {
     public static PCollection<StarRatingStatisticsPerMonth> calculate(Pipeline pipeline, PCollection<UserSession> input) {
 
         PCollection<KV<String, Double>> dateRateKv = input.apply(
-                "UserSession to kv(year-month, userSession)", ParDo.of(new DoFn<UserSession, KV<String, Double>>() {
+                "UserSession to kv(year-month, rating)", ParDo.of(new DoFn<UserSession, KV<String, Double>>() {
                     @ProcessElement
                     public void processElement(ProcessContext context) {
-                        context.output(KV.of(GetFromValidTimeStamp.yearMonth(
-                                        Objects.requireNonNull(context.element()).
-                                                getDateRegisteredSession()),
+
+                        String date = Objects.requireNonNull(context.element())
+                                .getDateRegisteredSession()
+                                .split("-")[0] +
+                                "-" +
+                                context.element()
+                                        .getDateRegisteredSession()
+                                        .split("-")[1];
+
+                        context.output(KV.of(date,
                                 Objects.requireNonNull(context.element()).getRate()));
                     }
                 }));

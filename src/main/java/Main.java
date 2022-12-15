@@ -1,5 +1,5 @@
-import data.dataFromOperationalDB.GetAllFromUserSessionTable;
 import data.dataFromOperationalDB.GetAllFromSessionTable;
+import data.dataFromOperationalDB.GetAllFromUserSessionTable;
 import model.operationalDatabase.Session;
 import model.operationalDatabase.UserSession;
 import org.apache.beam.sdk.Pipeline;
@@ -12,6 +12,7 @@ import java.util.Objects;
 
 
 public class Main {
+
     public static void main(String[] args) {
 
         PipelineOptions options = PipelineOptionsFactory.create();
@@ -28,13 +29,8 @@ public class Main {
 
                 }));
 
-        GetAllFromSessionTable.get(pipeline)
-                .apply(ParDo.of(new DoFn<Session, Void>() {
-                    @ProcessElement
-                    public void processElement(ProcessContext context) {
-                        System.out.println("Start time " + context.element().getStartTime());
-                    }
-                }));
+
+
         pipeline.run();
     }
 }
