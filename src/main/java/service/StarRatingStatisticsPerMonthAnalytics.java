@@ -40,7 +40,7 @@ public class StarRatingStatisticsPerMonthAnalytics {
                     public void processElement(ProcessContext context) {
                         Double min = StreamSupport.stream(
                                         Objects.requireNonNull(context.element())
-                                                .getValue().spliterator(), false)
+                                                .getValue().spliterator(), false)//kthe ne stream
                                 .min(Double::compare).orElseGet(() -> (double) 0);
 
                         context.output(KV.of(Objects.requireNonNull(context.element()).getKey(), min));

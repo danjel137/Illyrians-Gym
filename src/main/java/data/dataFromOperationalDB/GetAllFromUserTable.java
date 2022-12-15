@@ -25,21 +25,22 @@ public class GetAllFromUserTable {
                 .withCoder(SerializableCoder.of(User.class))
                 .withRowMapper(new JdbcIO.RowMapper<User>() {
                     public User mapRow(ResultSet resultSet) throws Exception {
-                        return new User(resultSet.getInt(1),
-                                resultSet.getString(2),
-                                resultSet.getString(3),
-                                resultSet.getString(4),
-                                resultSet.getString(5),
-                                resultSet.getString(6),
-                                resultSet.getDate(7),
-                                resultSet.getString(8),
-                                resultSet.getString(9),
-                                resultSet.getDate(10),
-                                resultSet.getDate(11),
-                                resultSet.getString(12),
-                                resultSet.getString(13),
-                                resultSet.getString(14),
-                                resultSet.getInt(15));
+                        return new User(
+                                resultSet.getInt(1),//id
+                                resultSet.getString(2),//name
+                                resultSet.getString(3),//surname
+                                resultSet.getString(4),//email
+                                resultSet.getString(5),//password
+                                resultSet.getString(6),//user type
+                                resultSet.getDate(7),//birthday
+                                resultSet.getString(8),//gender
+                                resultSet.getString(9),//phone nr
+                                resultSet.getDate(10), //time date regist
+                                resultSet.getString(11),//trainer insta
+                                resultSet.getString(12),//trainer tit
+                                resultSet.getString(13),//train descrpt
+                                resultSet.getInt(14),//gum id
+                                resultSet.getDate(15));//end date subst
                     }
                 })
         );

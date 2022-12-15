@@ -12,10 +12,10 @@ import java.io.Serializable;
 public class Session implements Serializable {
     int sessionId;
     String description;
-    String type;
-    String difficultyLevel;
-    String startTime;
+    int difficultyLevel;
     int durationMins;
     int maxNumParticipants;
+    String startTime;
+    String Sessiontype;
     String dayWeek;
 }

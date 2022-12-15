@@ -26,14 +26,14 @@ public class GetAllFromSessionTable {
                 .withRowMapper(new JdbcIO.RowMapper<Session>() {
                     public Session mapRow(ResultSet resultSet) throws Exception {
                         return new Session(
-                                resultSet.getInt(1),
-                                resultSet.getString(2),
-                                resultSet.getString(3),
-                                resultSet.getString(4),
-                                resultSet.getString(5),
-                                resultSet.getInt(7),
-                                resultSet.getInt(8),
-                                resultSet.getString(9)
+                                resultSet.getInt(1),//id
+                                resultSet.getString(2),//description
+                                resultSet.getInt(3),//diff level
+                                resultSet.getInt(4),//duration mins
+                                resultSet.getInt(5),//max participans
+                                resultSet.getString(6),//start time
+                                resultSet.getString(7),//session type
+                                resultSet.getString(8)//day week
                         );
                     }
                 })
