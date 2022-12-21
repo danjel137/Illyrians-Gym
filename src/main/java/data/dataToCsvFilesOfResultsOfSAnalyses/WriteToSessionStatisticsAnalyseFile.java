@@ -5,7 +5,7 @@ import org.apache.beam.sdk.io.TextIO;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.transforms.ParDo;
 import org.apache.beam.sdk.values.PCollection;
-import service.ParseAsCsv;
+import service.utilities.ParseAsCsv;
 
 import java.util.Objects;
 

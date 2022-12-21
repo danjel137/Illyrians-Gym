@@ -1,4 +1,4 @@
-package service;
+package service.starRatingAnalyses;
 
 import model.analyticsDatabase.StarRatingStatisticsPerMonth;
 import model.operationalDatabase.UserSession;
@@ -28,7 +28,7 @@ public class StarRatingStatisticsPerMonthAnalytics {
                                 .getDateRegisteredSession()
                                 .split("-")[0] +
                                 "-" +
-                                context.element()
+                                Objects.requireNonNull(context.element())
                                         .getDateRegisteredSession()
                                         .split("-")[1];
 
@@ -79,6 +79,7 @@ public class StarRatingStatisticsPerMonthAnalytics {
                                         .getValue().spliterator(), false).collect(Collectors.toList());
 
                         double median = 0;
+                        //TODO sort before finding the mean
                         if (listOfElements.size() % 2 == 0) {
                             median = (listOfElements.get(listOfElements.size() / 2) + listOfElements.get((listOfElements.size() / 2) + 1)) / 2;
                         } else {

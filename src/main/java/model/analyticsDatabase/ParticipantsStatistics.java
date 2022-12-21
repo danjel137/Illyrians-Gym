@@ -4,12 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ParticipantsStatistics {
+public class ParticipantsStatistics implements Serializable {
     private int id;
     private String sessionType;
     private short minNumParticipants;

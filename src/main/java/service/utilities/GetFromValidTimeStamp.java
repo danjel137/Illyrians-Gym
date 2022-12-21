@@ -1,4 +1,4 @@
-package service;
+package service.utilities;
 
 public class GetFromValidTimeStamp {
 

@@ -1,4 +1,4 @@
-package service;
+package service.utilities;
 
 import model.analyticsDatabase.ParticipantsStatistics;
 import model.analyticsDatabase.SessionStatistics;
