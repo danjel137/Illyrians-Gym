@@ -79,7 +79,8 @@ public class StarRatingStatisticsPerMonthAnalytics {
                                         .getValue().spliterator(), false).collect(Collectors.toList());
 
                         double median = 0;
-                        //TODO sort before finding the mean
+                        //TODO sort before finding the median
+                        
                         if (listOfElements.size() % 2 == 0) {
                             median = (listOfElements.get(listOfElements.size() / 2) + listOfElements.get((listOfElements.size() / 2) + 1)) / 2;
                         } else {
