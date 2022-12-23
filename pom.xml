@@ -85,6 +85,30 @@
             <artifactId>beam-sdks-java-core</artifactId>
             <version>2.42.0</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.beam/beam-sdks-java-extensions-join-library -->
+        <dependency>
+            <groupId>org.apache.beam</groupId>
+            <artifactId>beam-sdks-java-extensions-join-library</artifactId>
+            <version>2.43.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.9.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.9.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>5.9.1</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -125,6 +149,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
             <version>1.9.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.beam</groupId>
+            <artifactId>beam-sdks-java-extensions-sql-jdbc</artifactId>
+            <version>2.43.0</version>
         </dependency>
 
     </dependencies>

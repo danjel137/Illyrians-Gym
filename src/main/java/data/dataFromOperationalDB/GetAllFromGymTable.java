@@ -15,13 +15,13 @@ public class GetAllFromGymTable {
     public static PCollection<Gym> get(Pipeline pipeline) {
         String postgresDriver = "org.postgresql.Driver";
         String hostname = "jdbc:postgresql://" + System.getenv("hostAndDbName");
-
+       // System.out.println( System.getenv("hostAndDbName"));
         return pipeline.apply(JdbcIO.<Gym>read()
                 .withDataSourceConfiguration(JdbcIO.DataSourceConfiguration.create(
                                 postgresDriver, hostname)
                         .withUsername("postgres")
-                        .withPassword(System.getenv("postgresPASSWORD")))
-                .withQuery("select * from gym;")
+                        .withPassword("12345600"))
+                .withQuery("select * from gym")
                 .withCoder(SerializableCoder.of(Gym.class))
                 .withRowMapper(new JdbcIO.RowMapper<Gym>() {
                     public Gym mapRow(ResultSet resultSet) throws Exception {
@@ -30,6 +30,7 @@ public class GetAllFromGymTable {
                                 resultSet.getString(3),
                                 resultSet.getString(4),
                                 resultSet.getString(5));
+
                     }
                 }));
     }

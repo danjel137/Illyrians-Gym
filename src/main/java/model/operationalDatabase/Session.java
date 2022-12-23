@@ -16,6 +16,10 @@ public class Session implements Serializable {
     int durationMins;
     int maxNumParticipants;
     String startTime;
-    String Sessiontype;
+    String sessionType;
     String dayWeek;
+
+
+    public Session(String sessiontype) {
+    }
 }
