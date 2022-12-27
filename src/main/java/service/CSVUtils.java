@@ -4,10 +4,10 @@ import model.analyticsDatabase.ParticipantsStatistics;
 import model.analyticsDatabase.SessionStatistics;
 import model.analyticsDatabase.StarRatingStatisticsPerMonth;
 
-public class ParseAsCsv {
-    private ParseAsCsv() {
+public class CSVUtils {
+    private CSVUtils() {
     }
-    public static String parse(StarRatingStatisticsPerMonth input) {
+    public static String toCsvLine(StarRatingStatisticsPerMonth input) {
         return input.getId() + "," +
                 input.getMonth() + ","
                 + input.getYear() + ","
@@ -17,7 +17,7 @@ public class ParseAsCsv {
                 + input.getAverageStar();
     }
 
-    public static String parse(SessionStatistics input) {
+    public static String toCsvLine(SessionStatistics input) {
         return input.getId() + "," +
                 input.getMinCountPerDayOfWeek() + "," +
                 input.getMaxCountPerDayOfWeek() + "," +
@@ -36,7 +36,7 @@ public class ParseAsCsv {
                 input.getResultDay();
     }
 
-    public static String parse(ParticipantsStatistics input) {
+    public static String toCsvLine(ParticipantsStatistics input) {
         return input.getId() + "," +
                 input.getSessionType() + "," +
                 input.getMinNumParticipants() + "," +

@@ -21,9 +21,9 @@ public class User implements Serializable {
     String gender;
     String phoneNumber;
     Date timeDateRegistered;
-    Date endTimeSubscription;
     String trainerInstagramAccount;
     String trainerTitle;
     String trainerDescription;
     int gymId;
+    Date endTimeSubscription;
 }
