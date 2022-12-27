@@ -212,8 +212,7 @@ public class Main {
 //                        //System.out.println(c.element());
 //                    }
 //                }));
-        UtilsRateGender.setPipeline(pipeline);
-        UtilsRateGender.getBiggestRateGenderAvgOfAllTypeSession();
+        UtilsRateGender.getBiggestRateGenderAvgOfAllTypeSession(pipeline);
         pipeline.run();
     }
 }
