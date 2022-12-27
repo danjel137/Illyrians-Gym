@@ -2,7 +2,9 @@ package service.starRatingAnalyses;
 
 import model.analyticsDatabase.StarRatingStatisticsPerMonth;
 import model.operationalDatabase.UserSession;
+import model.utilities.IdWrapper;
 import org.apache.beam.sdk.Pipeline;
+import org.apache.beam.sdk.coders.SerializableCoder;
 import org.apache.beam.sdk.transforms.*;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
@@ -14,10 +16,17 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public class StarRatingStatisticsPerMonthAnalytics {
+    //TODO refactor using Atomic Transforms
     private StarRatingStatisticsPerMonthAnalytics() {
     }
 
-    public static PCollection<StarRatingStatisticsPerMonth> calculate(Pipeline pipeline, PCollection<UserSession> input) {
+    public static PCollection<StarRatingStatisticsPerMonth> calculate(Pipeline pipeline
+            , PCollection<UserSession> input, IdWrapper availableIdInAWrapper) {
+
+        PCollectionView<IdWrapper> availableIdInAWrapperView =
+                pipeline.apply(Create.of(availableIdInAWrapper)
+                                .withCoder(SerializableCoder.of(IdWrapper.class)))
+                        .apply(View.asSingleton());
 
         PCollection<KV<String, Double>> dateRateKv = input.apply(
                 "UserSession to kv(year-month, rating)", ParDo.of(new DoFn<UserSession, KV<String, Double>>() {
@@ -48,9 +57,11 @@ public class StarRatingStatisticsPerMonthAnalytics {
                         Double min = StreamSupport.stream(
                                         Objects.requireNonNull(context.element())
                                                 .getValue().spliterator(), false)
-                                .min(Double::compare).orElseGet(() -> (double) 0);
+                                .min(Double::compare).orElseGet(() -> (double) -1);
 
-                        context.output(KV.of(Objects.requireNonNull(context.element()).getKey(), min));
+                        if (min != -1) {
+                            context.output(KV.of(Objects.requireNonNull(context.element()).getKey(), min));
+                        }
                     }
                 }));
 
@@ -62,10 +73,11 @@ public class StarRatingStatisticsPerMonthAnalytics {
                         Double max = StreamSupport.stream(
                                         Objects.requireNonNull(context.element())
                                                 .getValue().spliterator(), false)
-                                .max(Double::compare).orElseGet(() -> (double) 0);
+                                .max(Double::compare).orElseGet(() -> (double) -1);
 
-                        context.output(KV.of(Objects.requireNonNull(context.element()).getKey(), max));
-
+                        if (max != -1) {
+                            context.output(KV.of(Objects.requireNonNull(context.element()).getKey(), max));
+                        }
                     }
                 }));
 
@@ -76,10 +88,9 @@ public class StarRatingStatisticsPerMonthAnalytics {
 
                         List<Double> listOfElements = StreamSupport.stream(
                                 Objects.requireNonNull(context.element())
-                                        .getValue().spliterator(), false).collect(Collectors.toList());
+                                        .getValue().spliterator(), false).sorted(Double::compare).collect(Collectors.toList());
 
-                        double median = 0;
-                        //TODO sort before finding the mean
+                        double median;
                         if (listOfElements.size() % 2 == 0) {
                             median = (listOfElements.get(listOfElements.size() / 2) + listOfElements.get((listOfElements.size() / 2) + 1)) / 2;
                         } else {
@@ -93,17 +104,23 @@ public class StarRatingStatisticsPerMonthAnalytics {
                 ratesOfAMonthYear.apply(ParDo.of(new DoFn<KV<String, Iterable<Double>>, KV<String, Double>>() {
                                                      @ProcessElement
                                                      public void processElement(ProcessContext context) {
-
                                                          Double sum = StreamSupport.stream(
                                                                          Objects.requireNonNull(context.element())
                                                                                  .getValue().spliterator(), false)
-                                                                 .reduce(Double::sum)
-                                                                 .orElse((double) 0);
+                                                                 .filter(element -> element > 0)
+                                                                 .reduce((double) 0, Double::sum);
 
                                                          long count = StreamSupport.stream(
-                                                                 Objects.requireNonNull(context.element())
-                                                                         .getValue().spliterator(), false).count();
-                                                         context.output(KV.of(Objects.requireNonNull(context.element()).getKey(), sum / count));
+                                                                         Objects.requireNonNull(context.element())
+                                                                                 .getValue().spliterator(), false)
+                                                                 .filter(element -> element > 0)
+                                                                 .count();
+
+                                                         System.out.println("count: " + count);
+                                                         System.out.println("sum: " + sum);
+                                                         System.out.println("sum / count : " + (sum / count));
+
+                                                         context.output(KV.of(Objects.requireNonNull(context.element()).getKey(), (sum / count)));
                                                      }
                                                  }
                 ));
@@ -113,21 +130,22 @@ public class StarRatingStatisticsPerMonthAnalytics {
         PCollectionView<List<KV<String, Double>>> medianRatePerMonthList = medianRatePerMonth.apply(View.asList());
         PCollectionView<List<KV<String, Double>>> averageRatePerMonthList = averageRatePerMonth.apply(View.asList());
 
-
         return pipeline.apply(Create.of(1)).apply(ParDo.of(new DoFn<Integer, StarRatingStatisticsPerMonth>() {
             @ProcessElement
             public void processElement(ProcessContext context) {
-
-                StarRatingStatisticsPerMonth stats = new StarRatingStatisticsPerMonth();
 
                 List<KV<String, Double>> monthMinKV = context.sideInput(minRatePerMonthList);
                 List<KV<String, Double>> monthMaxKV = context.sideInput(maxRatePerMonthList);
                 List<KV<String, Double>> monthMedianKV = context.sideInput(medianRatePerMonthList);
                 List<KV<String, Double>> monthAverageKV = context.sideInput(averageRatePerMonthList);
+                IdWrapper id = context.sideInput(availableIdInAWrapperView);
 
                 List<String> months = monthMinKV.stream().map(KV::getKey).collect(Collectors.toList());
 
                 for (String month : months) {
+
+                    StarRatingStatisticsPerMonth stats = new StarRatingStatisticsPerMonth();
+                    stats.setId(id.getUniqueId().getAndIncrement());
 
                     stats.setYear(Integer.parseInt(month.split("-")[0]));
                     stats.setMonth(Integer.parseInt(month.split("-")[1]));
@@ -135,30 +153,37 @@ public class StarRatingStatisticsPerMonthAnalytics {
                     for (KV<String, Double> monthMinKVRecord : monthMinKV) {
                         if (month.equals(monthMinKVRecord.getKey())) {
                             stats.setMinStar(monthMinKVRecord.getValue());
+                            break;
                         }
                     }
 
                     for (KV<String, Double> monthMaxKVRecord : monthMaxKV) {
                         if (month.equals(monthMaxKVRecord.getKey())) {
                             stats.setMaxStar(monthMaxKVRecord.getValue());
+                            break;
                         }
                     }
 
                     for (KV<String, Double> monthMedianKVRecord : monthMedianKV) {
                         if (month.equals(monthMedianKVRecord.getKey())) {
                             stats.setMedianStar(monthMedianKVRecord.getValue());
+                            break;
                         }
                     }
 
                     for (KV<String, Double> monthAverageKVRecord : monthAverageKV) {
                         if (month.equals(monthAverageKVRecord.getKey())) {
-                            stats.setMedianStar(monthAverageKVRecord.getValue());
+                            stats.setAverageStar(monthAverageKVRecord.getValue());
+                            break;
                         }
                     }
                     context.output(stats);
                 }
             }
-        }).withSideInputs(minRatePerMonthList, maxRatePerMonthList, medianRatePerMonthList, averageRatePerMonthList));
-
+        }).withSideInputs(minRatePerMonthList,
+                maxRatePerMonthList,
+                medianRatePerMonthList,
+                averageRatePerMonthList,
+                availableIdInAWrapperView));
     }
 }
