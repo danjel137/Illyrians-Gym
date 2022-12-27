@@ -4,6 +4,7 @@ import data.dataFromOperationalDB.GetAllFromUserSessionTable;
 import data.dataFromOperationalDB.GetAllFromUserTable;
 import model.operationalDatabase.Gym;
 import model.operationalDatabase.Session;
+import model.operationalDatabase.UserSession;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.extensions.joinlibrary.Join;
 import org.apache.beam.sdk.options.PipelineOptions;
@@ -212,8 +213,63 @@ public class Main {
 //                        //System.out.println(c.element());
 //                    }
 //                }));
-        UtilsRateGender.setPipeline(pipeline);
-        UtilsRateGender.getBiggestRateGenderAvgOfAllTypeSession();
+
+        PCollection<KV<String, String>> KVTimeStartSessionID = GetAllFromSessionTable.get(pipeline)
+                .apply(ParDo.of(new DoFn<Session, KV<String, String>>() {
+                    @ProcessElement
+                    public void aVoid(ProcessContext c) {
+                        Session session = c.element();
+                        //System.out.println(KV.of(session.getStartTime(), String.valueOf(session.getSessionId())));
+                        c.output(KV.of(String.valueOf(session.getSessionId()), session.getStartTime()));
+                    }
+                }));
+
+        PCollection<KV<String, String>> KVSessionIdUserId = GetAllFromUserSessionTable.get(pipeline)
+                .apply(ParDo.of(new DoFn<UserSession, KV<String, String>>() {
+                    @ProcessElement
+                    public void aVoid(ProcessContext c) {
+                        UserSession userSession = c.element();
+                        c.output(KV.of(String.valueOf(userSession.getSessionId()), String.valueOf(userSession.getUserId())));
+                    }
+                }));
+
+        PCollection<KV<String, String>> joinedDatasets =
+                Join.innerJoin(
+                        KVTimeStartSessionID, KVSessionIdUserId)
+                        .apply(ParDo.of(new DoFn<KV<String, KV<String, String>>, KV<String, String>>() {
+                            @ProcessElement
+                            public void aVoid(ProcessContext c){
+//                                System.out.println(c.element().getKey()+": "+c.element().getValue().getKey()+": "+
+//                                        c.element().getValue().getValue());
+                                c.output(KV.of(c.element().getValue().getKey(),c.element().getValue().getValue()));
+                            }
+                        }));
+
+
+       // PCollection<KV<String, Integer>> maxNumSessionTimePrefered =
+                joinedDatasets.apply(GroupByKey.create())
+                .apply(ParDo.of(new DoFn<KV<String, Iterable<String>>, KV<String, Double>>() {
+                    @ProcessElement
+                    public void aVoid(ProcessContext c) {
+                        String strKey = c.element().getKey();
+                        Iterable<String> strValue = c.element().getValue();
+                        Integer sum = 0;
+                        for (String loop : strValue) {
+                            sum++;
+                        }
+                        //System.out.println(KV.of(strKey, sum));
+                        c.output(KV.of(strKey, Double.valueOf(sum)));
+                    }
+                })).apply(Combine.globally(Max.of(new KVComparator())))
+                        .apply(ParDo.of(new DoFn<KV<String, Double>, Void>() {
+                            @ProcessElement
+                            public void aVoid(ProcessContext c){
+                               // System.out.println(c.element());
+                            }
+                        }));
+
+//        UtilsRateGender.setPipeline(pipeline);
+//        UtilsRateGender.getBiggestRateGenderAvgOfAllTypeSession();
         pipeline.run();
     }
 }
