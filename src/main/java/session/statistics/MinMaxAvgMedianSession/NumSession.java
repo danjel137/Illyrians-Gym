@@ -26,6 +26,6 @@ public class NumSession extends DoFn<KV<String, Iterable<Integer>>, KV<String, I
             min = countNumSession;
 
         out.output(KV.of(nameSession, countNumSession));
-        //System.out.println(KV.of(nameSession,countNumSession));
+        System.out.println(KV.of(nameSession,countNumSession));
     }
 }

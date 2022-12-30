@@ -26,7 +26,7 @@ public class UtilsRateGender implements Serializable {
                 .apply("UserID ,genderMale ", ParDo.of(new KVUserGender()));
 
         PCollection<KV<String, Integer>> userIdSessionId = GetAllFromUserSessionTable.get(pipeline)
-                .apply("UserId ,SessionId" , ParDo.of(new KVUserIdSessionId()));
+                .apply("UserId ,SessionId", ParDo.of(new KVUserIdSessionId()));
 
         PCollection<KV<String, KV<String, Integer>>> joinedDatasets =
                 Join.innerJoin(
@@ -49,7 +49,7 @@ public class UtilsRateGender implements Serializable {
 
     public static PCollection<KV<String, Integer>> getSessionIdRateOnlyMaleGenderFromUserSession() {
         PCollection<KV<String, Integer>> KVUserIdRAte = GetAllFromUserSessionTable.get(pipeline)
-                .apply("KV SessionId ,Rate " , ParDo.of(new KVSessionIdRate()));
+                .apply("KV SessionId ,Rate ", ParDo.of(new KVSessionIdRate()));
 
         PCollection<KV<String, KV<Integer, Integer>>> joinedDatasetsUserIdSessionIdOnlyMaleGenderKVUserIdRAte =
                 Join.innerJoin(
@@ -139,14 +139,14 @@ public class UtilsRateGender implements Serializable {
     }
 
     public static void getBiggestRateGenderAvgOfAllTypeSession() {
-        PCollection<KV<String, Double>> flattenedAllsessionAvgRateFromMale = getAvgRateForSpecificGenderForAllSessionType().apply( Flatten.pCollections());
+        PCollection<KV<String, Double>> flattenedAllsessionAvgRateFromMale = getAvgRateForSpecificGenderForAllSessionType().apply(Flatten.pCollections());
         flattenedAllsessionAvgRateFromMale
-                .apply( Combine.globally(Max.of(new KVComparator())))
-                .apply( ParDo.of(new DoFn<KV<String, Double>, Void>() {
+                .apply(Combine.globally(Max.of(new KVComparator())))
+                .apply(ParDo.of(new DoFn<KV<String, Double>, Void>() {
 
                     @ProcessElement
                     public void apply(ProcessContext c) {
-                        avgTotal = c.element().getKey() + ": " + c.element().getValue();
+                        //avgTotal = c.element().getKey() + ": " + c.element().getValue();
                         System.out.println(c.element());
                     }
                 }));

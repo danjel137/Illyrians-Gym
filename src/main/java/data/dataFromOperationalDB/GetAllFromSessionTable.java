@@ -15,13 +15,12 @@ public class GetAllFromSessionTable {
     public static PCollection<Session> get(Pipeline pipeline) {
         String postgresDriver = "org.postgresql.Driver";
         String hostname = "jdbc:postgresql://" + System.getenv("hostAndDbName");
-
         return pipeline.apply(JdbcIO.<Session>read()
                 .withDataSourceConfiguration(JdbcIO.DataSourceConfiguration.create(
                                 postgresDriver, hostname)
                         .withUsername("postgres")
                         .withPassword(System.getenv("postgresPASSWORD")))
-                .withQuery("select * from session;")
+                .withQuery("select * from session")
                 .withCoder(SerializableCoder.of(Session.class))
                 .withRowMapper(new JdbcIO.RowMapper<Session>() {
                     public Session mapRow(ResultSet resultSet) throws Exception {

@@ -1,24 +1,9 @@
-import data.dataFromOperationalDB.GetAllFromGymTable;
-import data.dataFromOperationalDB.GetAllFromSessionTable;
-import data.dataFromOperationalDB.GetAllFromUserSessionTable;
-import data.dataFromOperationalDB.GetAllFromUserTable;
-import model.operationalDatabase.Gym;
-import model.operationalDatabase.Session;
-import model.operationalDatabase.User;
-import model.operationalDatabase.UserSession;
 import org.apache.beam.sdk.Pipeline;
-import org.apache.beam.sdk.extensions.joinlibrary.Join;
 import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
-import org.apache.beam.sdk.transforms.*;
-import org.apache.beam.sdk.values.KV;
-import org.apache.beam.sdk.values.PCollection;
-import org.apache.beam.sdk.values.PCollectionList;
-import session.statistics.MinMaxAvgMedianSession.*;
-import session.statistics.avgGenderRate.*;
+import session.statistics.MinMaxAvgMedianSession.UtilityMinMaxAvgMedian;
+import session.statistics.avgGenderRate.UtilsRateGender;
 import session.statistics.most.time.frequent.gender.UtilityTimeFrequent;
-
-import java.util.Objects;
 
 import static session.statistics.avgGenderRate.KVUserGender.gender;
 
@@ -26,7 +11,7 @@ import static session.statistics.avgGenderRate.KVUserGender.gender;
 public class Main {
 
     public static void main(String[] args) {
-        gender ="F";
+        gender = "M";
         PipelineOptions options = PipelineOptionsFactory.create();
         Pipeline pipeline = Pipeline.create(options);
 
@@ -97,7 +82,6 @@ public class Main {
 //        UtilityMinMaxAvgMedian utilityMinMaxAvgMedian=new UtilityMinMaxAvgMedian();
 //        utilityMinMaxAvgMedian.setPipeline(pipeline);
 //        utilityMinMaxAvgMedian.getMinRepeatSession();
-
 
 
 //       PCollection<KV<String, String>> userIdGenderOnlyMale= GetAllFromUserTable.get(pipeline)
@@ -219,8 +203,6 @@ public class Main {
 //                }));
 
 
-
-
 //        PCollection<KV<String, String>> KVTimeStartSessionID = GetAllFromSessionTable.get(pipeline)
 //                .apply(ParDo.of(new DoFn<Session, KV<String, String>>() {
 //                    @ProcessElement
@@ -277,10 +259,17 @@ public class Main {
 //                        }));
 
         UtilsRateGender.setPipeline(pipeline);
-//        UtilsRateGender.getBiggestRateGenderAvgOfAllTypeSession();
-
-
         UtilityTimeFrequent.mostTimeFrequent();
+//        pipeline.run();
+
+        UtilsRateGender.setPipeline(pipeline);
+        UtilsRateGender.getBiggestRateGenderAvgOfAllTypeSession();
+//        pipeline.run();
+
+
+        UtilityMinMaxAvgMedian utilityMinMaxAvgMedian=new UtilityMinMaxAvgMedian(pipeline);
+        utilityMinMaxAvgMedian.getMinRepeatSession();
         pipeline.run();
+
     }
 }
