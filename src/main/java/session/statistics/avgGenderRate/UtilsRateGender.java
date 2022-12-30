@@ -21,7 +21,7 @@ public class UtilsRateGender implements Serializable {
         UtilsRateGender.pipeline = pipeline;
     }
 
-    public static PCollection<KV<String, Integer>> getUserIdSessionIdOnlyMaleGenderFromUserSession() {
+    public static PCollection<KV<String, Integer>> getUserIdSessionIdOnlyGenderSpecificFromUserSession() {
         PCollection<KV<String, String>> userIdGenderOnlyMale = GetAllFromUserTable.get(pipeline)
                 .apply("UserID ,genderMale ", ParDo.of(new KVUserGender()));
 
@@ -32,7 +32,7 @@ public class UtilsRateGender implements Serializable {
                 Join.innerJoin(
                         userIdGenderOnlyMale, userIdSessionId);
 
-        return joinedDatasets.apply("TEST",
+        return joinedDatasets.apply("//user id session id from user_session",
                 MapElements.via(
                         new SimpleFunction<KV<String, KV<String, Integer>>, KV<String, Integer>>() {
 
@@ -53,10 +53,10 @@ public class UtilsRateGender implements Serializable {
 
         PCollection<KV<String, KV<Integer, Integer>>> joinedDatasetsUserIdSessionIdOnlyMaleGenderKVUserIdRAte =
                 Join.innerJoin(
-                        getUserIdSessionIdOnlyMaleGenderFromUserSession(), KVUserIdRAte);
+                        getUserIdSessionIdOnlyGenderSpecificFromUserSession(), KVUserIdRAte);
 
         return joinedDatasetsUserIdSessionIdOnlyMaleGenderKVUserIdRAte
-                .apply("FGCFXBFFSDFHGDFHDF", MapElements.via(
+                .apply("KV sessionId rate only gender specified", MapElements.via(
                         new SimpleFunction<KV<String, KV<Integer, Integer>>, KV<String, Integer>>() {
 
                             @Override
@@ -71,8 +71,8 @@ public class UtilsRateGender implements Serializable {
 
     public static PCollectionList<KV<String, String>> getSessionIdSessionTypeFromSession() {
         return GetAllFromSessionTable.get(pipeline)
-                .apply("Shko meeer", ParDo.of(new KVSessionIdSessionType()))
-                .apply("Dim ne pa shkolll jemi", Partition.of(
+                .apply("KV sessionId sessionType", ParDo.of(new KVSessionIdSessionType()))
+                .apply("split session type in partition", Partition.of(
                         6, new Partition.PartitionFn<KV<String, String>>() {
                             @Override
                             public int partitionFor(KV<String, String> elem, int numPartitions) {
@@ -112,37 +112,37 @@ public class UtilsRateGender implements Serializable {
     }
 
     public static PCollectionList<KV<String, Double>> getAvgRateForSpecificGenderForAllSessionType() {
-        PCollection<KV<String, Double>> yogaRateMale = getRateForSpecificGenderForAllSessionType().get(0).apply("1", ParDo.of(new ExtractRateName()))
-                .apply("7", Mean.perKey());
+        PCollection<KV<String, Double>> yogaRateAvg = getRateForSpecificGenderForAllSessionType().get(0).apply("KV rate name", ParDo.of(new ExtractRateName()))
+                .apply("Avg yoga", Mean.perKey());
 
-        PCollection<KV<String, Double>> enduranceRateMale = getRateForSpecificGenderForAllSessionType().get(1).apply("2", ParDo.of(new ExtractRateName()))
-                .apply("8", Mean.perKey());
+        PCollection<KV<String, Double>> enduranceRateAvg = getRateForSpecificGenderForAllSessionType().get(1).apply("KV rate name", ParDo.of(new ExtractRateName()))
+                .apply("Avg endurance", Mean.perKey());
 
-        PCollection<KV<String, Double>> fartlekRateMale = getRateForSpecificGenderForAllSessionType().get(2).apply("3", ParDo.of(new ExtractRateName()))
-                .apply("9", Mean.perKey());
+        PCollection<KV<String, Double>> fartlekRateAvg = getRateForSpecificGenderForAllSessionType().get(2).apply("KV rate name", ParDo.of(new ExtractRateName()))
+                .apply("Avg fartlek", Mean.perKey());
 
-        PCollection<KV<String, Double>> personalTrainingRateMale = getRateForSpecificGenderForAllSessionType().get(3).apply("4", ParDo.of(new ExtractRateName()))
-                .apply("41", Mean.perKey());
+        PCollection<KV<String, Double>> personalTrainingRateAvg = getRateForSpecificGenderForAllSessionType().get(3).apply("KV rate name", ParDo.of(new ExtractRateName()))
+                .apply("Avg personal training", Mean.perKey());
 
-        PCollection<KV<String, Double>> crossFeetRateMale = getRateForSpecificGenderForAllSessionType().get(4).apply("5", ParDo.of(new ExtractRateName()))
-                .apply("52", Mean.perKey());
+        PCollection<KV<String, Double>> crossFeetRateAvg = getRateForSpecificGenderForAllSessionType().get(4).apply("KV rate name", ParDo.of(new ExtractRateName()))
+                .apply("Avg crossFeet", Mean.perKey());
 
-        PCollection<KV<String, Double>> bodyBuildingRateMale = getRateForSpecificGenderForAllSessionType().get(5).apply("6", ParDo.of(new ExtractRateName()))
-                .apply("61", Mean.perKey());
+        PCollection<KV<String, Double>> bodyBuildingRateAvg = getRateForSpecificGenderForAllSessionType().get(5).apply("KV rate name", ParDo.of(new ExtractRateName()))
+                .apply("avg bodybuilding", Mean.perKey());
 
-        return PCollectionList.of(yogaRateMale)
-                .and(enduranceRateMale)
-                .and(fartlekRateMale)
-                .and(personalTrainingRateMale)
-                .and(crossFeetRateMale)
-                .and(bodyBuildingRateMale);
+        return PCollectionList.of(yogaRateAvg)
+                .and(enduranceRateAvg)
+                .and(fartlekRateAvg)
+                .and(personalTrainingRateAvg)
+                .and(crossFeetRateAvg)
+                .and(bodyBuildingRateAvg);
     }
 
     public static void getBiggestRateGenderAvgOfAllTypeSession() {
-        PCollection<KV<String, Double>> flattenedAllsessionAvgRateFromMale = getAvgRateForSpecificGenderForAllSessionType().apply("zonja naile", Flatten.pCollections());
+        PCollection<KV<String, Double>> flattenedAllsessionAvgRateFromMale = getAvgRateForSpecificGenderForAllSessionType().apply( Flatten.pCollections());
         flattenedAllsessionAvgRateFromMale
-                .apply("ZHGARRAVINA", Combine.globally(Max.of(new KVComparator())))
-                .apply("DFOGODFGNKDF", ParDo.of(new DoFn<KV<String, Double>, Void>() {
+                .apply( Combine.globally(Max.of(new KVComparator())))
+                .apply( ParDo.of(new DoFn<KV<String, Double>, Void>() {
 
                     @ProcessElement
                     public void apply(ProcessContext c) {

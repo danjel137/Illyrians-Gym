@@ -21,7 +21,7 @@ public class GetAllFromUserTable {
                                 postgresDriver, hostname)
                         .withUsername("postgres")
                         .withPassword(System.getenv("postgresPASSWORD")))
-                .withQuery("select * from user")
+                .withQuery("select * from \"user\"")
                 .withCoder(SerializableCoder.of(User.class))
                 .withRowMapper(new JdbcIO.RowMapper<User>() {
                     public User mapRow(ResultSet resultSet) throws Exception {
