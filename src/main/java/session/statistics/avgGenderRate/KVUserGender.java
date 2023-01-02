@@ -6,6 +6,9 @@ import org.apache.beam.sdk.values.KV;
 
 public class KVUserGender extends DoFn<User, KV<String, String>> {
     public static String gender;
+
+
+
     @ProcessElement
     public void apply(ProcessContext c)
 

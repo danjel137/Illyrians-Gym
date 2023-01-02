@@ -4,19 +4,21 @@ import model.operationalDatabase.User;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.coders.SerializableCoder;
 import org.apache.beam.sdk.io.jdbc.JdbcIO;
+import org.apache.beam.sdk.transforms.PTransform;
+import org.apache.beam.sdk.values.PBegin;
 import org.apache.beam.sdk.values.PCollection;
 
 import java.sql.ResultSet;
 
-public class GetAllFromUserTable {
+public class GetAllFromUserTable implements JDBCInputFactoryUserTable{
     private GetAllFromUserTable() {
     }
 
-    public static PCollection<User> get(Pipeline pipeline) {
+    public static PTransform<PBegin, PCollection<User>> get() {
         String postgresDriver = "org.postgresql.Driver";
         String hostname = "jdbc:postgresql://" + System.getenv("hostAndDbName");
 
-        return pipeline.apply(JdbcIO.<User>read()
+        return (JdbcIO.<User>read()
                 .withDataSourceConfiguration(JdbcIO.DataSourceConfiguration.create(
                                 postgresDriver, hostname)
                         .withUsername("postgres")

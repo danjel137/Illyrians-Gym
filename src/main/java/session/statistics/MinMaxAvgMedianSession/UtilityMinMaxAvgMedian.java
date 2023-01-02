@@ -24,29 +24,29 @@ public class UtilityMinMaxAvgMedian implements Serializable {
     }
 
 
-    public PCollection<KV<String, Integer>> getNumPerSessionRepeat() {
-        return GetAllFromSessionTable.get(pipeline)
+    public PCollection<KV<String, Integer>> getNumPerSessionRepeat(Pipeline p) {
+        return p.apply(GetAllFromSessionTable.get())
 
                 .apply("KV Session , 1", ParDo.of(new SessionType()))
                 .apply("count  session is repeated", GroupByKey.create())
                 .apply(ParDo.of(new NumSession()));
     }
 
-    public PCollection<String> getMinRepeatSession() {
-        return getNumPerSessionRepeat().apply("min session repeat", ParDo.of(new MinSessionRepeat()));
+    public PCollection<String> getMinRepeatSession(Pipeline p) {
+        return getNumPerSessionRepeat(p).apply("min session repeat", ParDo.of(new MinSessionRepeat()));
     }
 
-    public PCollection<String> getMaxRepeatSession() {
-        return getNumPerSessionRepeat().apply("max session repeat", ParDo.of(new MaxSessionRepeat()));
+    public PCollection<String> getMaxRepeatSession(Pipeline p) {
+        return getNumPerSessionRepeat(p).apply("max session repeat", ParDo.of(new MaxSessionRepeat()));
     }
 
-    public PCollection<Double> getAvgRateNumSession() {
-        return getNumPerSessionRepeat().apply("Extract num sesion", ParDo.of(new ExtractOnlyNumSession()))
+    public PCollection<Double> getAvgRateNumSession(Pipeline p) {
+        return getNumPerSessionRepeat(p).apply("Extract num sesion", ParDo.of(new ExtractOnlyNumSession()))
                 .apply("", Mean.globally());
     }
 
-    public PCollection<Double> getMedianNumSession() {
-        return getNumPerSessionRepeat().apply(ParDo.of(new DoFn<KV<String, Integer>, Double>() {
+    public PCollection<Double> getMedianNumSession(Pipeline p) {
+        return getNumPerSessionRepeat(p).apply(ParDo.of(new DoFn<KV<String, Integer>, Double>() {
             @ProcessElement
             public void apply(ProcessContext c) {
                 c.output(Double.valueOf(c.element().getValue()));

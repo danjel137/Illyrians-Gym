@@ -4,18 +4,20 @@ import model.operationalDatabase.Session;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.coders.SerializableCoder;
 import org.apache.beam.sdk.io.jdbc.JdbcIO;
+import org.apache.beam.sdk.transforms.PTransform;
+import org.apache.beam.sdk.values.PBegin;
 import org.apache.beam.sdk.values.PCollection;
 
 import java.sql.ResultSet;
 
-public class GetAllFromSessionTable {
-    private GetAllFromSessionTable() {
+public class GetAllFromSessionTable implements JDBCInputFactorySessionTable{
+    public GetAllFromSessionTable() {
     }
 
-    public static PCollection<Session> get(Pipeline pipeline) {
+    public static PTransform<PBegin, PCollection<Session>> get() {
         String postgresDriver = "org.postgresql.Driver";
         String hostname = "jdbc:postgresql://" + System.getenv("hostAndDbName");
-        return pipeline.apply(JdbcIO.<Session>read()
+        return (JdbcIO.<Session>read()
                 .withDataSourceConfiguration(JdbcIO.DataSourceConfiguration.create(
                                 postgresDriver, hostname)
                         .withUsername("postgres")

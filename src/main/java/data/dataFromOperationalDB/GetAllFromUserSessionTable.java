@@ -5,20 +5,22 @@ import model.operationalDatabase.UserSession;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.coders.SerializableCoder;
 import org.apache.beam.sdk.io.jdbc.JdbcIO;
+import org.apache.beam.sdk.transforms.PTransform;
+import org.apache.beam.sdk.values.PBegin;
 import org.apache.beam.sdk.values.PCollection;
 
 import java.sql.ResultSet;
 
-public class GetAllFromUserSessionTable {
+public class GetAllFromUserSessionTable implements JDBCInputFactoryUserSessionTable{
     //private constructor makes no longer possible to create an instance from GetAllFromCustomerSessionTable
     private GetAllFromUserSessionTable() {
     }
 
-    public static PCollection<UserSession> get(Pipeline pipeline) {
+    public static PTransform<PBegin, PCollection<UserSession>> get() {
         String postgresDriver = "org.postgresql.Driver";
         String hostname = "jdbc:postgresql://" + System.getenv("hostAndDbName");
 
-        return pipeline.apply(JdbcIO.<UserSession>read()
+        return (JdbcIO.<UserSession>read()
                 .withDataSourceConfiguration(JdbcIO.DataSourceConfiguration.create(
                                 postgresDriver, hostname)
                         .withUsername("postgres")

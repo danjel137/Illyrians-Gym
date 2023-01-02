@@ -1,6 +1,7 @@
 package session.statistics.most.time.frequent.gender;
 
 import data.dataFromOperationalDB.GetAllFromSessionTable;
+import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.extensions.joinlibrary.Join;
 import org.apache.beam.sdk.transforms.*;
 import org.apache.beam.sdk.values.KV;
@@ -15,9 +16,9 @@ import static session.statistics.avgGenderRate.UtilsRateGender.pipeline;
 
 public class UtilityTimeFrequent implements Serializable {
 
-
+    private Pipeline p;
     public static PCollection<KV<String, String>> kVTimeStartSessionID() {
-        return GetAllFromSessionTable.get(pipeline)
+        return pipeline.apply(GetAllFromSessionTable.get())
                 .apply("KV sessionID started time", ParDo.of(new ExtractSessionIdStartedTime()));
     }
 

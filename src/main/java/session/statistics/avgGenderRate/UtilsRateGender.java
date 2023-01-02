@@ -22,10 +22,10 @@ public class UtilsRateGender implements Serializable {
     }
 
     public static PCollection<KV<String, Integer>> getUserIdSessionIdOnlyGenderSpecificFromUserSession() {
-        PCollection<KV<String, String>> userIdGenderOnlyMale = GetAllFromUserTable.get(pipeline)
+        PCollection<KV<String, String>> userIdGenderOnlyMale =pipeline.apply( GetAllFromUserTable.get())
                 .apply("UserID ,genderMale ", ParDo.of(new KVUserGender()));
 
-        PCollection<KV<String, Integer>> userIdSessionId = GetAllFromUserSessionTable.get(pipeline)
+        PCollection<KV<String, Integer>> userIdSessionId = pipeline.apply(GetAllFromUserSessionTable.get())
                 .apply("UserId ,SessionId", ParDo.of(new KVUserIdSessionId()));
 
         PCollection<KV<String, KV<String, Integer>>> joinedDatasets =
@@ -48,7 +48,7 @@ public class UtilsRateGender implements Serializable {
 
 
     public static PCollection<KV<String, Integer>> getSessionIdRateOnlyMaleGenderFromUserSession() {
-        PCollection<KV<String, Integer>> KVUserIdRAte = GetAllFromUserSessionTable.get(pipeline)
+        PCollection<KV<String, Integer>> KVUserIdRAte = pipeline.apply(GetAllFromUserSessionTable.get())
                 .apply("KV SessionId ,Rate ", ParDo.of(new KVSessionIdRate()));
 
         PCollection<KV<String, KV<Integer, Integer>>> joinedDatasetsUserIdSessionIdOnlyMaleGenderKVUserIdRAte =
@@ -70,7 +70,7 @@ public class UtilsRateGender implements Serializable {
     }
 
     public static PCollectionList<KV<String, String>> getSessionIdSessionTypeFromSession() {
-        return GetAllFromSessionTable.get(pipeline)
+        return pipeline.apply(GetAllFromSessionTable.get())
                 .apply("KV sessionId sessionType", ParDo.of(new KVSessionIdSessionType()))
                 .apply("split session type in partition", Partition.of(
                         6, new Partition.PartitionFn<KV<String, String>>() {

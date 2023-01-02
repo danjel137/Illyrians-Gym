@@ -4,19 +4,20 @@ import model.operationalDatabase.Gym;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.coders.SerializableCoder;
 import org.apache.beam.sdk.io.jdbc.JdbcIO;
+import org.apache.beam.sdk.transforms.PTransform;
+import org.apache.beam.sdk.values.PBegin;
 import org.apache.beam.sdk.values.PCollection;
 
 import java.sql.ResultSet;
 
-public class GetAllFromGymTable {
-    private GetAllFromGymTable() {
-    }
+public class GetAllFromGymTable implements JDBCInputFactoryGymTable{
 
-    public static PCollection<Gym> get(Pipeline pipeline) {
+
+    public static PTransform<PBegin, PCollection<Gym>> get() {
         String postgresDriver = "org.postgresql.Driver";
         String hostname = "jdbc:postgresql://" + System.getenv("hostAndDbName");
        // System.out.println( System.getenv("hostAndDbName"));
-        return pipeline.apply(JdbcIO.<Gym>read()
+        return (JdbcIO.<Gym>read()
                 .withDataSourceConfiguration(JdbcIO.DataSourceConfiguration.create(
                                 postgresDriver, hostname)
                         .withUsername("postgres")

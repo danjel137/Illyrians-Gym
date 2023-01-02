@@ -1,11 +1,20 @@
+import data.dataFromOperationalDB.GetAllFromSessionTable;
+import model.operationalDatabase.Session;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
+import org.apache.beam.sdk.transforms.DoFn;
+import org.apache.beam.sdk.transforms.GroupByKey;
+import org.apache.beam.sdk.transforms.ParDo;
+import org.apache.beam.sdk.values.KV;
 import session.statistics.MinMaxAvgMedianSession.UtilityMinMaxAvgMedian;
 import session.statistics.avgGenderRate.UtilsRateGender;
+import session.statistics.minMaxAvgMedianDifficilyLevel.KVSessionTypeDifficultyLevel;
+import session.statistics.minMaxAvgMedianDifficilyLevel.UtiliyDifficultyLevel;
 import session.statistics.most.time.frequent.gender.UtilityTimeFrequent;
 
 import static session.statistics.avgGenderRate.KVUserGender.gender;
+import static session.statistics.avgGenderRate.UtilsRateGender.getSessionIdSessionTypeFromSession;
 
 
 public class Main {
@@ -41,15 +50,18 @@ public class Main {
 //                    }
 //                }));
 //
-//        GetAllFromSessionTable.get(pipeline)
+
+
+//      pipeline.apply(  GetAllFromSessionTable.get())
 //                        .apply(ParDo.of(new DoFn<Session, Session>() {
 //                            @ProcessElement
 //                            public void apply (ProcessContext c){
-//                               c.output(new Session((c.element()).getSessionType()));
-//                                System.out.println(c.element());
+//                                Session session=c.element();
+//                               //c.output(new Session((c.element()).getSessionType()));
+//                                System.out.println(session.getSessionId());
 //                            }
 //                        }));
-
+//pipeline.run();
 
 //        PCollection<KV<String, Integer>> numPerSessionRepeat =
 //                GetAllFromSessionTable.get(pipeline)
@@ -203,15 +215,15 @@ public class Main {
 //                }));
 
 
-//        PCollection<KV<String, String>> KVTimeStartSessionID = GetAllFromSessionTable.get(pipeline)
-//                .apply(ParDo.of(new DoFn<Session, KV<String, String>>() {
-//                    @ProcessElement
-//                    public void aVoid(ProcessContext c) {
-//                        Session session = c.element();
-//                        //System.out.println(KV.of(session.getStartTime(), String.valueOf(session.getSessionId())));
-//                        c.output(KV.of(String.valueOf(session.getSessionId()), session.getStartTime()));
-//                    }
-//                }));
+        pipeline.apply( GetAllFromSessionTable.get())
+                .apply(ParDo.of(new DoFn<Session, KV<String, String>>() {
+                    @ProcessElement
+                    public void aVoid(ProcessContext c) {
+                        Session session = c.element();
+                        //System.out.println(c.element());
+                        //System.out.println(KV.of(session.getStartTime(), String.valueOf(session.getSessionId())));
+                    }
+                }));
 //
 //        PCollection<KV<String, String>> KVSessionIdUserId = GetAllFromUserSessionTable.get(pipeline)
 //                .apply(ParDo.of(new DoFn<UserSession, KV<String, String>>() {
@@ -258,18 +270,21 @@ public class Main {
 //                            }
 //                        }));
 
-        UtilsRateGender.setPipeline(pipeline);
-        UtilityTimeFrequent.mostTimeFrequent();
+
+          UtiliyDifficultyLevel.sessionTypeMedianDifficultyLevel(pipeline);
+          pipeline.run();
+//        UtilsRateGender.setPipeline(pipeline);
+//        UtilityTimeFrequent.mostTimeFrequent();
 //        pipeline.run();
 
-        UtilsRateGender.setPipeline(pipeline);
-        UtilsRateGender.getBiggestRateGenderAvgOfAllTypeSession();
+//        UtilsRateGender.setPipeline(pipeline);
+//        UtilsRateGender.getBiggestRateGenderAvgOfAllTypeSession();
 //        pipeline.run();
 
 
-        UtilityMinMaxAvgMedian utilityMinMaxAvgMedian=new UtilityMinMaxAvgMedian(pipeline);
-        utilityMinMaxAvgMedian.getMinRepeatSession();
-        pipeline.run();
+//        UtilityMinMaxAvgMedian utilityMinMaxAvgMedian=new UtilityMinMaxAvgMedian(pipeline);
+//        utilityMinMaxAvgMedian.getMinRepeatSession(pipeline);
+//        pipeline.run();
 
     }
 }
