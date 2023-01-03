@@ -1,4 +1,4 @@
-package session.statistics.MinMaxAvgMedianSession;
+package session.statistics.MinMaxAvgMedianSessionRepeat;
 
 
 import org.apache.beam.sdk.transforms.SerializableFunction;

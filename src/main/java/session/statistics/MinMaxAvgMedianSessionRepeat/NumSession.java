@@ -1,4 +1,4 @@
-package session.statistics.MinMaxAvgMedianSession;
+package session.statistics.MinMaxAvgMedianSessionRepeat;
 
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.values.KV;
@@ -26,6 +26,7 @@ public class NumSession extends DoFn<KV<String, Iterable<Integer>>, KV<String, I
             min = countNumSession;
 
         out.output(KV.of(nameSession, countNumSession));
-        System.out.println(KV.of(nameSession,countNumSession));
+        //System.out.println(KV.of(nameSession,countNumSession));
+       // System.out.println(countNumSession);
     }
 }

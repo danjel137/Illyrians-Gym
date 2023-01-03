@@ -1,4 +1,4 @@
-package session.statistics.minMaxAvgMedianDifficilyLevel;
+package session.statistics.minMaxAvgMedianDifficultyLevel;
 
 import model.operationalDatabase.Session;
 import org.apache.beam.sdk.transforms.DoFn;

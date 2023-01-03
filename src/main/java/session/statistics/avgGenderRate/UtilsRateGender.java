@@ -147,7 +147,7 @@ public class UtilsRateGender implements Serializable {
                     @ProcessElement
                     public void apply(ProcessContext c) {
                         //avgTotal = c.element().getKey() + ": " + c.element().getValue();
-                        System.out.println(c.element());
+                        //System.out.println(c.element());
                     }
                 }));
 

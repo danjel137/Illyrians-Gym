@@ -1,7 +1,6 @@
-package session.statistics.minMaxAvgMedianDifficilyLevel;
+package session.statistics.minMaxAvgMedianDifficultyLevel;
 
 import org.apache.beam.sdk.transforms.DoFn;
-import org.apache.beam.sdk.transforms.Min;
 import org.apache.beam.sdk.values.KV;
 
 public class MaxDifficultyLevel extends DoFn<KV<String,Iterable<Integer>>,KV<String,Integer>> {
@@ -17,7 +16,7 @@ public class MaxDifficultyLevel extends DoFn<KV<String,Iterable<Integer>>,KV<Str
                 maxx=compare;
             }
         }
-        System.out.println(sessionType+maxx);
+        //System.out.println(sessionType+maxx);
         out.output(KV.of(sessionType,maxx));
     }
 }

@@ -1,4 +1,4 @@
-package session.statistics.MinMaxAvgMedianSession;
+package session.statistics.MinMaxAvgMedianSessionRepeat;
 
 import model.operationalDatabase.Session;
 import org.apache.beam.sdk.transforms.DoFn;

@@ -6,16 +6,19 @@ import org.apache.beam.sdk.extensions.joinlibrary.Join;
 import org.apache.beam.sdk.transforms.*;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
+import org.apache.beam.sdk.values.PCollectionView;
 import session.statistics.avgGenderRate.KVComparator;
+import session.statistics.avgGenderRate.KVUserGender;
 import session.statistics.avgGenderRate.UtilsRateGender;
 
 import java.io.Serializable;
+import java.util.List;
 
 import static session.statistics.avgGenderRate.UtilsRateGender.pipeline;
 
 
 public class UtilityTimeFrequent implements Serializable {
-
+    public static String gender;
     private Pipeline p;
     public static PCollection<KV<String, String>> kVTimeStartSessionID() {
         return pipeline.apply(GetAllFromSessionTable.get())
@@ -53,9 +56,21 @@ public class UtilityTimeFrequent implements Serializable {
                 .apply(ParDo.of(new DoFn<KV<String, Double>, KV<String, Double>>() {
                     @ProcessElement
                     public void aVoid(ProcessContext c) {
-                        System.out.println(c.element());
+//                        System.out.println(c.element());
                         c.output(c.element());
                     }
                 }));
     }
+    public static PCollectionView<List<KV<String, Double>>> mostTimeFrequentMale(){
+        gender = "M";
+       return UtilityTimeFrequent.mostTimeFrequent().apply(View.asList());
+    }
+
+    public static PCollectionView<List<KV<String, Double>>> mostTimeFrequentFemale(){
+        gender = "F";
+        return  UtilityTimeFrequent.mostTimeFrequent().apply(View.asList());
+
+    }
+
+
 }

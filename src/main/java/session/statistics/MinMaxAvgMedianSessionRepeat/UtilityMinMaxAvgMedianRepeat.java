@@ -1,4 +1,4 @@
-package session.statistics.MinMaxAvgMedianSession;
+package session.statistics.MinMaxAvgMedianSessionRepeat;
 
 import data.dataFromOperationalDB.GetAllFromSessionTable;
 import org.apache.beam.sdk.Pipeline;
@@ -8,19 +8,13 @@ import org.apache.beam.sdk.values.PCollection;
 
 import java.io.Serializable;
 
-public class UtilityMinMaxAvgMedian implements Serializable {
+public class UtilityMinMaxAvgMedianRepeat implements Serializable {
     final private Pipeline pipeline;
-    public String MinRepeatSession;
-    public String MaxRepeatSession;
-    public String AvgRateNumSession;
-    public String MedianNumSession;
 
-    public UtilityMinMaxAvgMedian(Pipeline pipeline) {
+
+    public UtilityMinMaxAvgMedianRepeat(Pipeline pipeline) {
         this.pipeline = pipeline;
-//        MinRepeatSession = String.valueOf(getMinRepeatSession());
-//        MaxRepeatSession=String.valueOf(getMaxRepeatSession());
-//        AvgRateNumSession=String.valueOf(getAvgRateNumSession());
-//        MedianNumSession=String.valueOf(getMedianNumSession());
+
     }
 
 
@@ -41,8 +35,8 @@ public class UtilityMinMaxAvgMedian implements Serializable {
     }
 
     public PCollection<Double> getAvgRateNumSession(Pipeline p) {
-        return getNumPerSessionRepeat(p).apply("Extract num sesion", ParDo.of(new ExtractOnlyNumSession()))
-                .apply("", Mean.globally());
+        return getNumPerSessionRepeat(p).apply("Extract num session", ParDo.of(new ExtractOnlyNumSession()))
+                .apply("find average for all session", Mean.globally());
     }
 
     public PCollection<Double> getMedianNumSession(Pipeline p) {

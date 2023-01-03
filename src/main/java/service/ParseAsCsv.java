@@ -17,24 +17,24 @@ public class ParseAsCsv {
                 + input.getAverageStar();
     }
 
-    public static String parse(SessionStatistics input) {
-        return input.getId() + "," +
-                input.getMinCountPerDayOfWeek() + "," +
-                input.getMaxCountPerDayOfWeek() + "," +
-                input.getAverageCountPerDayOfWeek() + "," +
-                input.getMedianDifficultyLevel() + "," +
-                input.getBusiestPartOfDay() + "," +
-                input.getMostFrequentTypeOfSession() + "," +
-                input.getFavouriteSessionForMales() + "," +
-                input.getFavouriteSessionForFemales() + "," +
-                input.getFavouriteAttendanceTimeForMales() + "," +
-                input.getFavouriteSessionForFemales() + "," +
-                input.getMaxDifficultyLevel() + "," +
-                input.getMinDifficultyLevel() + "," +
-                input.getAverageDifficultyLevel() + "," +
-                input.getMedianDifficultyLevel() + "," +
-                input.getResultDay();
-    }
+//    public static String parse(SessionStatistics input) {
+//        return input.getId() + "," +
+//                input.getMinCountPerDayOfWeek() + "," +
+//                input.getMaxCountPerDayOfWeek() + "," +
+//                input.getAverageCountPerDayOfWeek() + "," +
+//                input.getMedianDifficultyLevel() + "," +
+//                input.getBusiestPartOfDay() + "," +
+//                input.getMostFrequentTypeOfSession() + "," +
+//                input.getFavouriteSessionForMales() + "," +
+//                input.getFavouriteSessionForFemales() + "," +
+//                input.getFavouriteAttendanceTimeForMales() + "," +
+//                input.getFavouriteSessionForFemales() + "," +
+//                input.getMaxDifficultyLevel() + "," +
+//                input.getMinDifficultyLevel() + "," +
+//                input.getAverageDifficultyLevel() + "," +
+//                input.getMedianDifficultyLevel() + "," +
+//                input.getResultDay();
+//    }
 
     public static String parse(ParticipantsStatistics input) {
         return input.getId() + "," +

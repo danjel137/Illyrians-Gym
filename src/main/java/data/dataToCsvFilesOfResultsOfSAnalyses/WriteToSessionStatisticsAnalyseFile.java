@@ -13,16 +13,16 @@ public class WriteToSessionStatisticsAnalyseFile {
     private WriteToSessionStatisticsAnalyseFile() {
     }
 
-    public void write(PCollection<SessionStatistics> input, String filename, String header) {
-        input.apply(ParDo.of(new DoFn<SessionStatistics, String>() {
-                    @ProcessElement
-                    public void processElement(ProcessContext context) {
-                        context.output(ParseAsCsv.parse(Objects.requireNonNull(context.element())));
-                    }
-                }))
-                .apply(TextIO.write().to(filename)
-                        .withSuffix(".csv")
-                        .withHeader(header)
-                );
-    }
+//    public void write(PCollection<SessionStatistics> input, String filename, String header) {
+//        input.apply(ParDo.of(new DoFn<SessionStatistics, String>() {
+//                    @ProcessElement
+//                    public void processElement(ProcessContext context) {
+//                        context.output(ParseAsCsv.parse(Objects.requireNonNull(context.element())));
+//                    }
+//                }))
+//                .apply(TextIO.write().to(filename)
+//                        .withSuffix(".csv")
+//                        .withHeader(header)
+//                );
+//    }
 }
