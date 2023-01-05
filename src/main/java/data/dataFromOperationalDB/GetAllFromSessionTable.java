@@ -1,7 +1,6 @@
 package data.dataFromOperationalDB;
 
 import model.operationalDatabase.Session;
-import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.coders.SerializableCoder;
 import org.apache.beam.sdk.io.jdbc.JdbcIO;
 import org.apache.beam.sdk.transforms.PTransform;

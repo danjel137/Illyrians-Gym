@@ -8,7 +8,7 @@ import org.apache.beam.sdk.transforms.PTransform;
 import org.apache.beam.sdk.transforms.ParDo;
 import org.apache.beam.sdk.values.PCollection;
 import org.apache.beam.sdk.values.PDone;
-import service.CSVUtils;
+import service.utilities.CSVUtils;
 
 import java.io.Serializable;
 import java.util.Objects;

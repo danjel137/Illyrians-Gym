@@ -1,7 +1,6 @@
 package data.dataFromOperationalDB;
 
 import model.operationalDatabase.User;
-import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.coders.SerializableCoder;
 import org.apache.beam.sdk.io.jdbc.JdbcIO;
 import org.apache.beam.sdk.transforms.PTransform;
@@ -37,11 +36,11 @@ public class GetAllFromUserTable implements Serializable {
                                 resultSet.getDate(7),//birthday
                                 resultSet.getString(8),//gender
                                 resultSet.getString(9),//phone nr
-                                resultSet.getDate(10), //time date regist
-                                resultSet.getString(11),//trainer insta
+                                resultSet.getDate(10), //time date registered acc
+                                resultSet.getString(11),//trainer instagram
                                 resultSet.getString(12),//trainer tit
-                                resultSet.getString(13),//train descrpt
-                                resultSet.getInt(14),//gum id
+                                resultSet.getString(13),//train desc
+                                resultSet.getInt(14),//gym id
                                 resultSet.getDate(15));//end date subst
                     }
                 });
