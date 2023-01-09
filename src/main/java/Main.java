@@ -1,15 +1,18 @@
-import data.dataFromInnerResources.JsonDictionaryWithAvailableIds;
-import data.dataFromOperationalDB.GetAllFromGymTable;
-import data.dataFromOperationalDB.GetAllFromSessionTable;
-import data.dataFromOperationalDB.GetAllFromUserSessionTable;
-import data.dataFromOperationalDB.GetAllFromUserTable;
-import model.analyticsDatabase.ParticipantsStatistics;
-import model.analyticsDatabase.StarRatingStatisticsPerMonth;
-import model.operationalDatabase.Gym;
-import model.operationalDatabase.Session;
-import model.operationalDatabase.User;
-import model.operationalDatabase.UserSession;
+import data.inner.resources.JsonDictionaryWithAvailableIds;
+import data.operational.GetAllFromSessionTable;
+import data.operational.GetAllFromUserSessionTable;
+import data.operational.GetAllFromUserTable;
+import data.to.csv.files.WriteToParticipantsStatisticsAnalyseFile;
+import data.to.csv.files.WriteToStarRatingAnalyseFile;
+import model.analytics.db.HeadersOfCsvFiles;
+import model.analytics.db.ParticipantsStatistics;
+import model.analytics.db.StarRatingStatisticsPerMonth;
+import model.operational.db.*;
+import model.utilities.UserCoder;
 import org.apache.beam.sdk.Pipeline;
+import org.apache.beam.sdk.coders.KvCoder;
+import org.apache.beam.sdk.coders.SerializableCoder;
+import org.apache.beam.sdk.coders.StringUtf8Coder;
 import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.transforms.*;
@@ -18,12 +21,15 @@ import org.apache.beam.sdk.values.PCollection;
 import org.apache.beam.sdk.values.PCollectionView;
 import service.participants.analyses.*;
 import service.star.rating.analyses.*;
+import service.utilities.FilterUserByType;
+import service.utilities.FilterValidCustomerRecordsFn;
+import service.utilities.FilterValidSessionRecordsFn;
 
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -37,20 +43,24 @@ public class Main {
 
         //Data insertion into application
 
-        PCollection<Gym> gym = pipeline.apply(GetAllFromGymTable.getTransform());
+        PCollection<Session> sessions = pipeline.apply(GetAllFromSessionTable.getTransform())
+                .apply(ParDo.of(new FilterValidSessionRecordsFn()));
 
-        PCollection<Session> sessions = pipeline.apply(GetAllFromSessionTable.getTransform());
+        PCollection<User> users = pipeline.apply(GetAllFromUserTable.getTransform())
+                .setCoder(UserCoder.of());
 
-        PCollection<User> users = pipeline.apply(GetAllFromUserTable.getTransform());
+        PCollection<User> customers = users.apply(ParDo.of(new FilterUserByType(UserType.CUSTOMER.toString())))
+                .apply(ParDo.of(new FilterValidCustomerRecordsFn()));
 
         PCollection<UserSession> userSessions = pipeline.apply(GetAllFromUserSessionTable.getTransform());
 
         //reading  available ids from json and creating the view
         Map<String, AtomicInteger> idAvailableValues = JsonDictionaryWithAvailableIds.getJsonObjectWithIdsAsMap();
+
         PCollectionView<Map<String, AtomicInteger>> availableMappedIdsView = pipeline
                 .apply(Create.of(idAvailableValues)).apply(View.asMap());
 
-        PCollectionView<List<User>> usersView = users.apply(View.asList());
+        PCollectionView<List<User>> customersView = customers.apply(View.asList());
 
         PCollection<KV<String, Iterable<Double>>> ratingsPerYearMonth = userSessions
                 .apply(ParDo.of(new UserSessionToYearMonthRatingKVFn()))
@@ -127,6 +137,7 @@ public class Main {
                     }
                 }).withSideInputs(yearMonthMinView, yearMonthMaxView, yearMonthMedianView, yearMonthAverageView, availableMappedIdsView));
 
+// todo delete after test this anonymous displaying
         ratingStats.apply(ParDo.of(new DoFn<StarRatingStatisticsPerMonth, Void>() {
             @ProcessElement
             public void processElement(ProcessContext context) {
@@ -142,7 +153,7 @@ public class Main {
             public void processElement(ProcessContext context) {
 
                 List<UserSession> userSessionsList = context.sideInput(userSessionsView);
-                List<User> usersList = context.sideInput(usersView);
+                List<User> usersList = context.sideInput(customersView);
 
                 for (UserSession userSession : userSessionsList) {
                     if (Objects.requireNonNull(context.element()).getSessionId() == userSession.getSessionId()) {
@@ -155,10 +166,11 @@ public class Main {
                     }
                 }
             }
-        }).withSideInputs(usersView, userSessionsView));
+        }).withSideInputs(customersView, userSessionsView));
 
         PCollection<KV<String, User>> sessionTypeUser = sessionUser
-                .apply(ParDo.of(new SessionUserToSessionTypeUserDoFn()));
+                .apply(ParDo.of(new SessionUserToSessionTypeUserDoFn()))
+                .setCoder(KvCoder.of(StringUtf8Coder.of(), UserCoder.of()));
 
         //calculating min , max, median, average of participant statistics
 
@@ -174,7 +186,6 @@ public class Main {
         PCollection<KV<String, Long>> sessionTypeCount = sessionIdSessionTypeCount
                 .apply(ParDo.of(new SessionIdSessionTypeCountToSessionTypeCountFn()));
 
-
         PCollection<KV<String, Long>> sessionTypeMin = sessionTypeSessionIdCount
                 .apply(Min.perKey((a, b) -> (int) (a.getValue() - b.getValue())))
                 .apply(ParDo.of(new SessionTypeSessionIdCountToSessionTypeCount()));
@@ -189,16 +200,19 @@ public class Main {
         PCollection<KV<String, Double>> sessionTypeMedian = sessionTypeCount.apply(Combine.globally(new MedianFn()))
                 .apply(ParDo.of(new SessionTypeMedianMapToSessionTypeMedianKVFn()));
 
-
         // calculating most frequent gender per session
 
-        PCollection<KV<String, String>> sessionTypeGender = sessionTypeUser.apply(ParDo.of(new SessionTypeUserGenderDoFn()));
+        PCollection<KV<String, String>> sessionTypeGender = sessionTypeUser
+                .apply(ParDo.of(new SessionTypeUserGenderDoFn()));
 
-        PCollection<KV<KV<String, String>, Long>> sessionTypeGenderCount = sessionTypeGender.apply(Count.perElement());
+        PCollection<KV<KV<String, String>, Long>> sessionTypeGenderCount = sessionTypeGender
+                .apply(Count.perElement());
 
-        PCollection<KV<KV<String, String>, Long>> sessionTypeGenderMax = sessionTypeGenderCount.apply(Max.perKey());
+        PCollection<KV<KV<String, String>, Long>> sessionTypeGenderMax = sessionTypeGenderCount
+                .apply(Max.perKey());
 
-        PCollection<KV<String, String>> sessionTypeMostFrequentGender = sessionTypeGenderMax.apply(ParDo.of(new ExtractSessionTypeMostFrequentGenderDoFn()));
+        PCollection<KV<String, String>> sessionTypeMostFrequentGender = sessionTypeGenderMax
+                .apply(ParDo.of(new ExtractSessionTypeMostFrequentGenderDoFn()));
 
         // calculating most frequent person per session name surname
 
@@ -210,7 +224,7 @@ public class Main {
 
         // calculating the most frequent male per session, name, surname
 
-        PCollection<KV<String, User>> sessionTypeMaleUser = sessionTypeUser.apply(ParDo.of(new FilterSessionTypeUserByGender("M")));
+        PCollection<KV<String, User>> sessionTypeMaleUser = sessionTypeUser.apply(ParDo.of(new FilterSessionTypeUserByGender(GenderType.M.toString())));
 
         PCollection<KV<KV<String, User>, Long>> sessionTypeMaleUserCount = sessionTypeMaleUser.apply(Count.perElement());
 
@@ -220,7 +234,7 @@ public class Main {
 
         //calculating the most frequent female per session, name surname
 
-        PCollection<KV<String, User>> sessionTypeFemaleUser = sessionTypeUser.apply(ParDo.of(new FilterSessionTypeUserByGender("F")));
+        PCollection<KV<String, User>> sessionTypeFemaleUser = sessionTypeUser.apply(ParDo.of(new FilterSessionTypeUserByGender(GenderType.F.toString())));
 
         PCollection<KV<KV<String, User>, Long>> sessionTypeFemaleUserCount = sessionTypeFemaleUser.apply(Count.perElement());
 
@@ -246,7 +260,7 @@ public class Main {
 
         PCollectionView<List<KV<String, String>>> sessionTypeNameSurnameOfMostFrequentFemaleUserView = sessionTypeNameSurnameOfMostFrequentFemaleUser.apply(View.asList());
 
-        pipeline.apply(Create.of(1))
+        PCollection<ParticipantsStatistics> participantStats = pipeline.apply(Create.of(1))
                 .apply(ParDo.of(new DoFn<Integer, ParticipantsStatistics>() {
                     final SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
@@ -314,9 +328,11 @@ public class Main {
                                     participantsStatistics.setMostFrequentMaleNameSurname(sessionTypeNameSurnameOfMostFrequentFemaleUser.getValue());
                                 }
                             }
+                            context.output(participantsStatistics);
                         }
 
                     }
+
                 }).withSideInputs(sessionTypeMinView,
                         sessionTypeMaxView,
                         sessionTypeAverageView,
@@ -326,7 +342,38 @@ public class Main {
                         sessionTypeNameSurnameOfMostFrequentMaleUserView,
                         sessionTypeNameSurnameOfMostFrequentFemaleUserView,
                         availableMappedIdsView
-                ));
+                )).setCoder(SerializableCoder.of(ParticipantsStatistics.class));
+
+        //writing data into buckets
+
+        Properties properties = new Properties();
+
+        String ratingStatsFileName;
+        String ratingStatsFileHeader = HeadersOfCsvFiles.STAR_RATING_STATISTICS;
+
+        String participantStatsFileName;
+        String participantStatsFileHeader = HeadersOfCsvFiles.PARTICIPANT_STATISTICS_HEADERS;
+
+// todo write valid values in properties file
+
+        try {
+
+            Reader reader = new FileReader("src/main/resources/config.properties");
+            properties.load(reader);
+
+            ratingStatsFileName = properties.getProperty("starRatingAnalyticsFilePath");
+            participantStatsFileName = properties.getProperty("participantsStatisticsFilePath");
+
+            participantStats.apply(WriteToParticipantsStatisticsAnalyseFile
+                    .getTransform(participantStatsFileName, participantStatsFileHeader));
+
+            ratingStats.apply(WriteToStarRatingAnalyseFile
+                    .getTransform(ratingStatsFileName, ratingStatsFileHeader));
+
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+
 
         pipeline.run().waitUntilFinish();
 

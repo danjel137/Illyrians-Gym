@@ -1,8 +1,8 @@
 package service.utilities;
 
-import model.analyticsDatabase.ParticipantsStatistics;
-import model.analyticsDatabase.SessionStatistics;
-import model.analyticsDatabase.StarRatingStatisticsPerMonth;
+import model.analytics.db.ParticipantsStatistics;
+import model.analytics.db.SessionStatistics;
+import model.analytics.db.StarRatingStatisticsPerMonth;
 
 public class CSVUtils {
     private CSVUtils() {

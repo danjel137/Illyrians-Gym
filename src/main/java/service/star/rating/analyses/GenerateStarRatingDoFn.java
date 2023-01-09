@@ -1,6 +1,6 @@
 package service.star.rating.analyses;
 
-import model.analyticsDatabase.StarRatingStatisticsPerMonth;
+import model.analytics.db.StarRatingStatisticsPerMonth;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PBegin;

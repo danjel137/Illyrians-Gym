@@ -1,7 +1,7 @@
 package service.participants.analyses;
 
-import model.operationalDatabase.Session;
-import model.operationalDatabase.User;
+import model.operational.db.Session;
+import model.operational.db.User;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.values.KV;
 

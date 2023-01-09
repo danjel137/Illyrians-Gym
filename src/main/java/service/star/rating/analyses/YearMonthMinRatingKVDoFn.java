@@ -19,6 +19,5 @@ public class YearMonthMinRatingKVDoFn extends DoFn<KV<String, Iterable<Double>>,
             context.output(KV.of(Objects.requireNonNull(context.element()).getKey(), min));
         }
 
-
     }
 }
