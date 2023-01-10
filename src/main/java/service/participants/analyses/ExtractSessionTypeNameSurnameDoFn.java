@@ -6,14 +6,16 @@ import org.apache.beam.sdk.values.KV;
 
 import java.util.Objects;
 
-public class ExtractSessionTypeNameSurnameDoFn extends DoFn<KV<KV<String, User>, Long>, KV<String, String>>{
+public class ExtractSessionTypeNameSurnameDoFn extends DoFn<KV<KV<String, KV<Integer, User>>, Long>, KV<String, String>> {
     @ProcessElement
     public void process(ProcessContext context) {
 
         String sessionType = Objects.requireNonNull(context.element()).getKey().getKey();
-        String nameSurname = Objects.requireNonNull(context.element()).getKey().getValue().getFirstName() +
+
+        User user = Objects.requireNonNull(context.element()).getKey().getValue().getValue();
+        String nameSurname = user.getFirstName() +
                 "," +
-                Objects.requireNonNull(context.element()).getKey().getValue().getLastName();
+                user.getLastName();
 
         context.output(KV.of(sessionType, nameSurname));
     }

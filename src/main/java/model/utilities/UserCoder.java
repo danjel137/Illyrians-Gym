@@ -25,20 +25,28 @@ public class UserCoder extends StructuredCoder<User> {
     @Override
     public void encode(User value, OutputStream outStream) throws IOException {
 
-//        if (value.getFirstName() != null
-//                && value.getLastName() != null
-//                && value.getBirthday() != null
-//                && value.getEmail() != null
-//                && value.getPassword() != null
-//                && value.getUserType() != null
-//                && value.getPhoneNumber() != null
-//                && value.getTimeDateRegistered() != null
-//                && value.getEndTimeSubscription() != null
-//        ) {}
+//        BIG_ENDIAN_INT_CODER.encode(value.getUserId(), outStream);
+//        BIG_ENDIAN_INT_CODER.encode(value.getGymId(), outStream);
+//        STRING_UTF_8_CODER.encode(value.getFirstName(), outStream);
+//        STRING_UTF_8_CODER.encode(value.getLastName(), outStream);
+//        STRING_UTF_8_CODER.encode(value.getEmail(), outStream);
+//        STRING_UTF_8_CODER.encode(value.getPassword(), outStream);
+//        STRING_UTF_8_CODER.encode(value.getUserType(), outStream);
+//        STRING_UTF_8_CODER.encode(value.getBirthday(), outStream);
+//        STRING_UTF_8_CODER.encode(value.getGender(), outStream);
+//        STRING_UTF_8_CODER.encode(value.getPhoneNumber(), outStream);
+//        STRING_UTF_8_CODER.encode(value.getTimeDateRegistered(), outStream);
+//        STRING_UTF_8_CODER.encode(value.getTrainerInstagramAccount(), outStream);
+//        STRING_UTF_8_CODER.encode(value.getTrainerTitle(), outStream);
+//        STRING_UTF_8_CODER.encode(value.getEndTimeSubscription(), outStream);
+
 
         BOOLEAN_CODER.encode(Objects.nonNull(value), outStream);
+
         if (value != null) {
+
             BIG_ENDIAN_INT_CODER.encode(value.getUserId(), outStream);
+
             BIG_ENDIAN_INT_CODER.encode(value.getGymId(), outStream);
 
             if (value.getFirstName() != null) {
@@ -93,28 +101,75 @@ public class UserCoder extends StructuredCoder<User> {
                 STRING_UTF_8_CODER.encode(value.getEndTimeSubscription(), outStream);
             }
         }
+
     }
 
     @Override
     public User decode(InputStream inStream) throws IOException {
         if (Boolean.TRUE.equals(BOOLEAN_CODER.decode(inStream))) {
-            return User.builder().userId(BIG_ENDIAN_INT_CODER.decode(inStream))
-                    .firstName(STRING_UTF_8_CODER.decode(inStream))
-                    .lastName(STRING_UTF_8_CODER.decode(inStream))
-                    .email(STRING_UTF_8_CODER.decode(inStream))
-                    .password(STRING_UTF_8_CODER.decode(inStream))
-                    .userType(STRING_UTF_8_CODER.decode(inStream))
-                    .birthday(STRING_UTF_8_CODER.decode(inStream))
-                    .gender(STRING_UTF_8_CODER.decode(inStream))
-                    .phoneNumber(STRING_UTF_8_CODER.decode(inStream))
-                    .timeDateRegistered(STRING_UTF_8_CODER.decode(inStream))
-                    .timeDateRegistered(STRING_UTF_8_CODER.decode(inStream))
-                    .trainerTitle(STRING_UTF_8_CODER.decode(inStream))
-                    .trainerInstagramAccount(STRING_UTF_8_CODER.decode(inStream))
-                    .trainerTitle(STRING_UTF_8_CODER.decode(inStream))
-                    .trainerDescription(STRING_UTF_8_CODER.decode(inStream))
-                    .gymId(BIG_ENDIAN_INT_CODER.decode(inStream))
-                    .endTimeSubscription(STRING_UTF_8_CODER.decode(inStream)).build();
+
+            User user = new User();
+
+            if (BIG_ENDIAN_INT_CODER.decode(inStream) != null) {
+                user.setUserId(BIG_ENDIAN_INT_CODER.decode(inStream));
+            }
+
+            if (BIG_ENDIAN_INT_CODER.decode(inStream) != null) {
+                user.setGymId(BIG_ENDIAN_INT_CODER.decode(inStream));
+            }
+
+            if (STRING_UTF_8_CODER.decode(inStream) != null) {
+                user.setFirstName(STRING_UTF_8_CODER.decode(inStream));
+            }
+
+            if (STRING_UTF_8_CODER.decode(inStream) != null) {
+                user.setLastName(STRING_UTF_8_CODER.decode(inStream));
+            }
+
+            if (STRING_UTF_8_CODER.decode(inStream) != null) {
+                user.setEmail(STRING_UTF_8_CODER.decode(inStream));
+            }
+
+            if (STRING_UTF_8_CODER.decode(inStream) != null) {
+                user.setPassword(STRING_UTF_8_CODER.decode(inStream));
+            }
+
+            if (STRING_UTF_8_CODER.decode(inStream) != null) {
+                user.setUserType(STRING_UTF_8_CODER.decode(inStream));
+            }
+
+            if (STRING_UTF_8_CODER.decode(inStream) != null) {
+                user.setBirthday(STRING_UTF_8_CODER.decode(inStream));
+            }
+
+            if (STRING_UTF_8_CODER.decode(inStream) != null) {
+                user.setGender(STRING_UTF_8_CODER.decode(inStream));
+            }
+
+            if (STRING_UTF_8_CODER.decode(inStream) != null) {
+                user.setPhoneNumber(STRING_UTF_8_CODER.decode(inStream));
+            }
+
+            if (STRING_UTF_8_CODER.decode(inStream) != null) {
+                user.setTimeDateRegistered(STRING_UTF_8_CODER.decode(inStream));
+            }
+
+            if (STRING_UTF_8_CODER.decode(inStream) != null) {
+                user.setTrainerInstagramAccount(STRING_UTF_8_CODER.decode(inStream));
+            }
+
+            if (STRING_UTF_8_CODER.decode(inStream) != null) {
+                user.setTrainerTitle(STRING_UTF_8_CODER.decode(inStream));
+            }
+
+            if (STRING_UTF_8_CODER.decode(inStream) != null) {
+                user.setTrainerDescription(STRING_UTF_8_CODER.decode(inStream));
+            }
+
+            if (STRING_UTF_8_CODER.decode(inStream) != null) {
+                user.setEndTimeSubscription(STRING_UTF_8_CODER.decode(inStream));
+            }
+            return user;
         }
         return null;
     }
