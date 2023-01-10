@@ -1,1 +1,1 @@
-mvn compile exec:java -Dexec.mainClass=Main
+mvn compile exec:java -D"exec.mainClass"="Main"

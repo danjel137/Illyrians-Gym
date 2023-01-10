@@ -14,7 +14,6 @@ import org.apache.beam.runners.dataflow.options.DataflowPipelineOptions;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.coders.KvCoder;
 import org.apache.beam.sdk.coders.StringUtf8Coder;
-import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.transforms.*;
 import org.apache.beam.sdk.values.KV;
@@ -41,7 +40,7 @@ public class Main {
         options.setProject("illyrians-gym-project");
         options.setRunner(DataflowRunner.class);
         options.setGcpTempLocation("gs://statistics-datasets");
-        options.setRegion("europe-west1");
+        options.setRegion("europe-west8");
         options.setJobName("GymProjectPipelines");
 
         Pipeline pipeline = Pipeline.create(options);
