@@ -53,7 +53,6 @@ public class JsonDictionaryWithAvailableIds {
     }
 
     public static void updateAll(Map<String, AtomicInteger> map) {
-
         try {
             gson.toJson(map, new FileWriter(String.valueOf(reader)));
         } catch (IOException exception) {

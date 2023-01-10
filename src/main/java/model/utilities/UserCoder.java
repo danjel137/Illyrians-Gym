@@ -24,22 +24,6 @@ public class UserCoder extends StructuredCoder<User> {
     @Override
     public void encode(User value, OutputStream outStream) throws IOException {
 
-//        BIG_ENDIAN_INT_CODER.encode(value.getUserId(), outStream);
-//        BIG_ENDIAN_INT_CODER.encode(value.getGymId(), outStream);
-//        STRING_UTF_8_CODER.encode(value.getFirstName(), outStream);
-//        STRING_UTF_8_CODER.encode(value.getLastName(), outStream);
-//        STRING_UTF_8_CODER.encode(value.getEmail(), outStream);
-//        STRING_UTF_8_CODER.encode(value.getPassword(), outStream);
-//        STRING_UTF_8_CODER.encode(value.getUserType(), outStream);
-//        STRING_UTF_8_CODER.encode(value.getBirthday(), outStream);
-//        STRING_UTF_8_CODER.encode(value.getGender(), outStream);
-//        STRING_UTF_8_CODER.encode(value.getPhoneNumber(), outStream);
-//        STRING_UTF_8_CODER.encode(value.getTimeDateRegistered(), outStream);
-//        STRING_UTF_8_CODER.encode(value.getTrainerInstagramAccount(), outStream);
-//        STRING_UTF_8_CODER.encode(value.getTrainerTitle(), outStream);
-//        STRING_UTF_8_CODER.encode(value.getEndTimeSubscription(), outStream);
-
-
         BOOLEAN_CODER.encode(value != null, outStream);
 
         BIG_ENDIAN_INT_CODER.encode(value.getUserId(), outStream);
@@ -218,39 +202,4 @@ public class UserCoder extends StructuredCoder<User> {
         BOOLEAN_CODER.verifyDeterministic();
     }
 }
-
-
-//
-//public class JsonCoder<T> extends AtomicCoder<T> {
-//    private static final long serialVersionUID = -1L;
-//
-//    private static final Coder<Boolean> BOOLEAN_CODER = BooleanCoder.of();
-//    private static final Coder<String> STRING_CODER = StringUtf8Coder.of();
-//
-//    private Class<T> clazz;
-//
-//    @Override
-//    public void encode(T value, OutputStream outStream) throws IOException {
-//        if (value == null) {
-//            BOOLEAN_CODER.encode(Boolean.FALSE, outStream);
-//        } else {
-//            BOOLEAN_CODER.encode(Boolean.TRUE, outStream);
-//            STRING_CODER.encode(JsonUtil.toJsonString(value), outStream);
-//        }
-//    }
-//
-//    @Override
-//    @Nullable
-//    public T decode(InputStream inStream) throws IOException {
-//        if (BOOLEAN_CODER.decode(inStream)) {
-//            return JsonUtil.serializeToObject(STRING_CODER.decode(inStream), clazz);
-//        } else {
-//            return null;
-//        }
-//    }
-//
-//    public static <T> JsonCoder<T> of(Class<T> clazz) {
-//        return new JsonCoder<>(clazz);
-//    }
-//}
 
