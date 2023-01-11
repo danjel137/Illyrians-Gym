@@ -30,6 +30,7 @@ public class UtilityMinMaxAvgMedianRepeat implements Serializable {
         return getNumPerSessionRepeat(p).apply("min session repeat", ParDo.of(new MinSessionRepeat()));
     }
 
+
     public PCollection<String> getMaxRepeatSession(Pipeline p) {
         return getNumPerSessionRepeat(p).apply("max session repeat", ParDo.of(new MaxSessionRepeat()));
     }

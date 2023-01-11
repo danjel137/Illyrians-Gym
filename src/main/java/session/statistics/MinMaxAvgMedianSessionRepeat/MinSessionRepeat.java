@@ -7,7 +7,7 @@ public class MinSessionRepeat extends DoFn<KV<String,Integer>,String> {
     @ProcessElement
     public void filter(ProcessContext c) {
         if (c.element().getValue() == NumSession.min) {
-           // System.out.println(c.element());
+            //System.out.println(c.element());
             c.output(c.element().getKey()+": "+c.element().getValue());
         }
     }

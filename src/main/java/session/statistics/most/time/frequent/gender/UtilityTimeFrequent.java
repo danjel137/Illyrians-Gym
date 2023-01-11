@@ -18,8 +18,7 @@ import static session.statistics.avgGenderRate.UtilsRateGender.pipeline;
 
 
 public class UtilityTimeFrequent implements Serializable {
-    public static String gender;
-    private Pipeline p;
+    public static String gender="F";
     public static PCollection<KV<String, String>> kVTimeStartSessionID() {
         return pipeline.apply(GetAllFromSessionTable.get())
                 .apply("KV sessionID started time", ParDo.of(new ExtractSessionIdStartedTime()));
@@ -55,11 +54,11 @@ public class UtilityTimeFrequent implements Serializable {
         return maxNumSessionTime().apply("most time frequent", Combine.globally(Max.of(new KVComparator())))
                 .apply(ParDo.of(new DoFn<KV<String, Double>, KV<String, Double>>() {
                     @ProcessElement
-                    public void aVoid(ProcessContext c) {
-//                        System.out.println(c.element());
-                        c.output(c.element());
+                    public void aVoid(ProcessContext c){
+                       // System.out.println(c.element());
                     }
                 }));
+
     }
     public static PCollectionView<List<KV<String, Double>>> mostTimeFrequentMale(){
         gender = "M";

@@ -14,7 +14,6 @@ import java.io.Serializable;
 
 public class UtilsRateGender implements Serializable {
 
-    public static String avgTotal;
     public static Pipeline pipeline;
 
     public static void setPipeline(Pipeline pipeline) {

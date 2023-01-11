@@ -54,7 +54,7 @@
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
-                                        <Main-Class>Main</Main-Class>
+                                        <Main-Class>readFromFileAndWriteToBucket.Computations</Main-Class>
                                         <Build-Number>1.0</Build-Number>
                                     </manifestEntries>
                                 </transformer>
@@ -75,11 +75,11 @@
             <version>2.42.0</version>
             <scope>runtime</scope>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.apache.beam</groupId>-->
-        <!--            <artifactId>beam-runners-google-cloud-dataflow-java</artifactId>-->
-        <!--            <version>2.42.0</version>-->
-        <!--        </dependency>-->
+<!--                <dependency>-->
+<!--                    <groupId>org.apache.beam</groupId>-->
+<!--                    <artifactId>beam-runners-google-cloud-dataflow-java</artifactId>-->
+<!--                    <version>2.42.0</version>-->
+<!--                </dependency>-->
         <dependency>
             <groupId>org.apache.beam</groupId>
             <artifactId>beam-sdks-java-core</artifactId>
@@ -109,6 +109,20 @@
             <version>5.9.1</version>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/pl.pragmatists/JUnitParams -->
+        <dependency>
+            <groupId>pl.pragmatists</groupId>
+            <artifactId>JUnitParams</artifactId>
+            <version>1.0.4</version>
+            <scope>test</scope>
+        </dependency>
+            <!-- ... all the other dependencies you may have -->
+            <dependency>
+                <groupId>org.apache.beam</groupId>
+                <artifactId>beam-runners-core-construction-java</artifactId>
+                <version>2.42.0</version>
+            </dependency>
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>

@@ -62,47 +62,5 @@ public class UtiliyDifficultyLevel implements Serializable {
                         }
                 ));
     }
-
-
-
-//    public static SessionStatistics getTableRowFromDifficulty(List<KV<String, Integer>> minDifficultyLevel,
-//                                                              List<KV<String, Integer>> maxDifficultyLevel,
-//                                                              List<KV<String, Double>> avgDifficultyLevel,
-//                                                              List<KV<String, Integer>> medianDifficultyLevel,
-//                                                              SessionStatistics sessionStatistics){
-//        for (int i = 0; i < avgDifficultyLevel.size(); i++){
-//            if (minDifficultyLevel.get(i).getKey().equals("YOGA")) {
-//                sessionStatistics.setMinDifficultyLevelYoga(minDifficultyLevel.get(i).getValue());
-//                sessionStatistics.setMaxDifficultyLevelYoga(maxDifficultyLevel.get(i).getValue());
-//                sessionStatistics.setAvgDifficultyLevelYoga(avgDifficultyLevel.get(i).getValue());
-//                sessionStatistics.setMedianDifficultyLevelYoga(medianDifficultyLevel.get(i).getValue());
-//            } else if (minDifficultyLevel.get(i).getKey().equals("ENDURANCE")) {
-//                sessionStatistics.setMinDifficultyLevelEndurance(minDifficultyLevel.get(i).getValue());
-//                sessionStatistics.setMaxDifficultyLevelEndurance(maxDifficultyLevel.get(i).getValue());
-//                sessionStatistics.setAvgDifficultyLevelEndurance(avgDifficultyLevel.get(i).getValue());
-//                sessionStatistics.setMedianDifficultyLevelEndurance(medianDifficultyLevel.get(i).getValue());
-//            } else if (minDifficultyLevel.get(i).getKey().equals("FARTLEK")) {
-//                sessionStatistics.setMinDifficultyLevelFARTLEK(minDifficultyLevel.get(i).getValue());
-//                sessionStatistics.setMaxDifficultyLevelFARTLEK(maxDifficultyLevel.get(i).getValue());
-//                sessionStatistics.setAvgDifficultyLevelFARTLEK(avgDifficultyLevel.get(i).getValue());
-//                sessionStatistics.setMedianDifficultyLevelFARTLEK(medianDifficultyLevel.get(i).getValue());
-//            } else if (minDifficultyLevel.get(i).getKey().equals("PERSONAL_TRAINING")) {
-//                sessionStatistics.setMinDifficultyLevelPersonalTraining(minDifficultyLevel.get(i).getValue());
-//                sessionStatistics.setMaxDifficultyLevelPersonalTraining(maxDifficultyLevel.get(i).getValue());
-//                sessionStatistics.setAvgDifficultyLevelPersonalTraining(avgDifficultyLevel.get(i).getValue());
-//                sessionStatistics.setMedianDifficultyLevelPersonalTraining(medianDifficultyLevel.get(i).getValue());
-//            } else if (minDifficultyLevel.get(i).getKey().equals("CROSSFIT")) {
-//                sessionStatistics.setMinDifficultyLevelCrossFit(minDifficultyLevel.get(i).getValue());
-//                sessionStatistics.setMaxDifficultyLevelCrossFit(maxDifficultyLevel.get(i).getValue());
-//                sessionStatistics.setAvgDifficultyLevelCrossFit(avgDifficultyLevel.get(i).getValue());
-//                sessionStatistics.setMedianDifficultyLevelCrossFit(medianDifficultyLevel.get(i).getValue());
-//            }else
-//            sessionStatistics.setMinDifficultyLevelBODYBUILDING(minDifficultyLevel.get(i).getValue());
-//            sessionStatistics.setMaxDifficultyLevelBODYBUILDING(maxDifficultyLevel.get(i).getValue());
-//            sessionStatistics.setAvgDifficultyLevelBODYBUILDING(avgDifficultyLevel.get(i).getValue());
-//            sessionStatistics.setMedianDifficultyLevelBODYBUILDING(medianDifficultyLevel.get(i).getValue());
-//        }
-//        return sessionStatistics;
-//    }
 }
 
