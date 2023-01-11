@@ -27,10 +27,10 @@ import service.utilities.FilterValidSessionRecordsFn;
 
 import java.io.FileReader;
 import java.io.Reader;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 
 public class Main {
@@ -38,9 +38,8 @@ public class Main {
 
         final DataflowPipelineOptions options = PipelineOptionsFactory.as(DataflowPipelineOptions.class);
         options.setProject("illyrians-gym-project");
-        options.setRunner(DataflowRunner.class);
-        options.setGcpTempLocation("gs://statistics-datasets");
-        options.setRegion("europe-west8");
+        options.setGcpTempLocation("gs://gcf-v2-sources-832801291670-europe-central2/temp");
+        options.setRegion("europe-west2");
         options.setJobName("GymProjectPipelines");
 
         Pipeline pipeline = Pipeline.create(options);
@@ -82,7 +81,6 @@ public class Main {
         PCollection<KV<String, Double>> yearMonthAverage = ratingsPerYearMonth
                 .apply(ParDo.of(new YearMonthAverageRatingKVDoFn()));
 
-        // creating views
 
         PCollectionView<List<KV<String, Double>>> yearMonthMinView = yearMonthMin.apply(View.asList());
         PCollectionView<List<KV<String, Double>>> yearMonthMaxView = yearMonthMax.apply(View.asList());
@@ -91,77 +89,17 @@ public class Main {
 
         PCollectionView<List<UserSession>> userSessionsView = userSessions.apply(View.asList());
 
-        // calculating rating statistics
-
-        PCollection<StarRatingStatisticsPerMonth> ratingStats = pipeline.apply(Create.of(1))
-                .apply(ParDo.of(new DoFn<Integer, StarRatingStatisticsPerMonth>() {
-                    @ProcessElement
-                    public void processElement(ProcessContext context) {
-
-                        List<KV<String, Double>> timeMin = context.sideInput(yearMonthMinView);
-                        List<KV<String, Double>> timeMax = context.sideInput(yearMonthMaxView);
-                        List<KV<String, Double>> timeMedian = context.sideInput(yearMonthMedianView);
-                        List<KV<String, Double>> timeAverage = context.sideInput(yearMonthAverageView);
-                        Map<String, AtomicInteger> availableIds = context.sideInput(availableMappedIdsView);
-                        List<String> months = timeMin.stream().map(KV::getKey).collect(Collectors.toList());
-
-                        for (String month : months) {
-
-                            StarRatingStatisticsPerMonth stats = new StarRatingStatisticsPerMonth();
-                            stats.setId(availableIds.get("starRatingAnalyseId").getAndIncrement());
-
-                            stats.setYear(Integer.parseInt(month.split("-")[0]));
-                            stats.setMonth(Integer.parseInt(month.split("-")[1]));
-
-                            for (KV<String, Double> monthMinKVRecord : timeMin) {
-                                if (month.equals(monthMinKVRecord.getKey())) {
-                                    stats.setMinStar(monthMinKVRecord.getValue());
-                                }
-                            }
-
-                            for (KV<String, Double> monthMaxKVRecord : timeMax) {
-                                if (month.equals(monthMaxKVRecord.getKey())) {
-                                    stats.setMaxStar(monthMaxKVRecord.getValue());
-                                }
-                            }
-
-                            for (KV<String, Double> monthMedianKVRecord : timeMedian) {
-                                if (month.equals(monthMedianKVRecord.getKey())) {
-                                    stats.setMedianStar(monthMedianKVRecord.getValue());
-                                }
-                            }
-
-                            for (KV<String, Double> monthAverageKVRecord : timeAverage) {
-                                if (month.equals(monthAverageKVRecord.getKey())) {
-                                    stats.setMedianStar(monthAverageKVRecord.getValue());
-                                }
-                            }
-                            context.output(stats);
-                        }
-                    }
-                }).withSideInputs(yearMonthMinView, yearMonthMaxView, yearMonthMedianView, yearMonthAverageView, availableMappedIdsView));
+        PCollection<StarRatingStatisticsPerMonth> ratingStats = GenerateRatingStatistics.getTransform(pipeline
+                , yearMonthMinView
+                , yearMonthMaxView
+                , yearMonthMedianView
+                , yearMonthAverageView
+                , availableMappedIdsView);
 
         // calculating participants statistics
 
-        PCollection<KV<Session, User>> sessionUser = sessions.apply("session type, gender KV", ParDo.of(new DoFn<Session, KV<Session, User>>() {
-            @ProcessElement
-            public void processElement(ProcessContext context) {
-
-                List<UserSession> userSessionsList = context.sideInput(userSessionsView);
-                List<User> usersList = context.sideInput(customersView);
-
-                for (UserSession userSession : userSessionsList) {
-                    if (Objects.requireNonNull(context.element()).getSessionId() == userSession.getSessionId()) {
-
-                        for (User user : usersList) {
-                            if (user.getUserId() == userSession.getUserId()) {
-                                context.output(KV.of(Objects.requireNonNull(context.element()), user));
-                            }
-                        }
-                    }
-                }
-            }
-        }).withSideInputs(customersView, userSessionsView));
+        PCollection<KV<Session, User>> sessionUser = SessionToSessionUserKVTransform
+                .getTransform(sessions, customersView, userSessionsView);
 
         PCollection<KV<String, User>> sessionTypeUser = sessionUser
                 .apply(ParDo.of(new SessionUserToSessionTypeUserDoFn()))
@@ -268,90 +206,16 @@ public class Main {
         PCollectionView<List<KV<String, String>>> sessionTypeNameSurnameOfMostFrequentFemaleUserView = sessionTypeNameSurnameOfMostFrequentFemaleUser
                 .apply(View.asList());
 
-        PCollection<ParticipantsStatistics> participantStats = pipeline.apply(Create.of(1))
-                .apply(ParDo.of(new DoFn<Integer, ParticipantsStatistics>() {
-                    final SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-
-                    @ProcessElement
-                    public void processElement(ProcessContext context) {
-
-                        List<KV<String, Long>> sessionTypeMinList = context.sideInput(sessionTypeMinView);
-                        List<KV<String, Long>> sessionTypeMaxList = context.sideInput(sessionTypeMaxView);
-                        List<KV<String, Double>> sessionTypeAverageList = context.sideInput(sessionTypeAverageView);
-                        List<KV<String, Double>> sessionTypeMedianList = context.sideInput(sessionTypeMedianView);
-                        List<KV<String, String>> sessionTypeMostFrequentGenderList = context.sideInput(sessionTypeMostFrequentGenderView);
-                        List<KV<String, String>> sessionTypeNameSurnameOfMostFrequentUserList = context.sideInput(sessionTypeNameSurnameOfMostFrequentUserView);
-                        List<KV<String, String>> sessionTypeNameSurnameOfMostFrequentMaleUserList = context.sideInput(sessionTypeNameSurnameOfMostFrequentMaleUserView);
-                        List<KV<String, String>> sessionTypeNameSurnameOfMostFrequentFemaleUserList = context.sideInput(sessionTypeNameSurnameOfMostFrequentFemaleUserView);
-                        Map<String, AtomicInteger> availableMappedIds = context.sideInput(availableMappedIdsView);
-
-                        for (KV<String, Long> sessionTypeMinKVPivot : sessionTypeMinList) {
-
-                            ParticipantsStatistics participantsStatistics = new ParticipantsStatistics();
-                            Date date = new Date();
-
-                            participantsStatistics.setSessionType(sessionTypeMinKVPivot.getKey());
-                            participantsStatistics.setMinNumParticipants(sessionTypeMinKVPivot.getValue());
-                            participantsStatistics.setResultDay(formatter.format(date));
-                            participantsStatistics.setId(availableMappedIds.get("participantsAnalyseId").getAndIncrement());
-
-                            for (KV<String, Long> sessionTypeMax : sessionTypeMaxList) {
-                                if (sessionTypeMinKVPivot.getKey().equals(sessionTypeMax.getKey())) {
-                                    participantsStatistics.setMaxNumParticipants(sessionTypeMax.getValue());
-                                }
-                            }
-
-                            for (KV<String, Double> sessionTypeAverage : sessionTypeAverageList) {
-                                if (sessionTypeMinKVPivot.getKey().equals(sessionTypeAverage.getKey())) {
-                                    participantsStatistics.setAverageNumParticipants(sessionTypeAverage.getValue());
-                                }
-                            }
-
-                            for (KV<String, Double> sessionTypeMedian : sessionTypeMedianList) {
-                                if (sessionTypeMinKVPivot.getKey().equals(sessionTypeMedian.getKey())) {
-                                    participantsStatistics.setMedianNumParticipants(sessionTypeMedian.getValue());
-                                }
-                            }
-
-                            for (KV<String, String> sessionTypeMostFrequentGender : sessionTypeMostFrequentGenderList) {
-                                if (sessionTypeMinKVPivot.getKey().equals(sessionTypeMostFrequentGender.getKey())) {
-                                    participantsStatistics.setMostFrequentGender(sessionTypeMostFrequentGender.getValue());
-                                }
-                            }
-
-                            for (KV<String, String> sessionTypeNameSurnameOfMostFrequentUser : sessionTypeNameSurnameOfMostFrequentUserList) {
-                                if (sessionTypeMinKVPivot.getKey().equals(sessionTypeNameSurnameOfMostFrequentUser.getKey())) {
-                                    participantsStatistics.setMostFrequentPersonNameSurname(sessionTypeNameSurnameOfMostFrequentUser.getValue());
-                                }
-                            }
-
-                            for (KV<String, String> sessionTypeNameSurnameOfMostFrequentMaleUser : sessionTypeNameSurnameOfMostFrequentMaleUserList) {
-                                if (sessionTypeMinKVPivot.getKey().equals(sessionTypeNameSurnameOfMostFrequentMaleUser.getKey())) {
-                                    participantsStatistics.setMostFrequentMaleNameSurname(sessionTypeNameSurnameOfMostFrequentMaleUser.getValue());
-                                }
-                            }
-
-                            for (KV<String, String> sessionTypeNameSurnameOfMostFrequentFemaleUser : sessionTypeNameSurnameOfMostFrequentFemaleUserList) {
-                                if (sessionTypeMinKVPivot.getKey().equals(sessionTypeNameSurnameOfMostFrequentFemaleUser.getKey())) {
-                                    participantsStatistics.setMostFrequentMaleNameSurname(sessionTypeNameSurnameOfMostFrequentFemaleUser.getValue());
-                                }
-                            }
-                            context.output(participantsStatistics);
-                        }
-                    }
-
-                }).withSideInputs(sessionTypeMinView,
-                        sessionTypeMaxView,
-                        sessionTypeAverageView,
-                        sessionTypeMedianView,
-                        sessionTypeMostFrequentGenderView,
-                        sessionTypeNameSurnameOfMostFrequentUserView,
-                        sessionTypeNameSurnameOfMostFrequentMaleUserView,
-                        sessionTypeNameSurnameOfMostFrequentFemaleUserView,
-                        availableMappedIdsView
-                ));
-
-        //writing data into buckets
+        PCollection<ParticipantsStatistics> participantStats = GenerateParticipantStatistics.getTransform(pipeline
+                , sessionTypeMinView
+                , sessionTypeMaxView
+                , sessionTypeAverageView
+                , sessionTypeMedianView
+                , sessionTypeMostFrequentGenderView
+                , sessionTypeNameSurnameOfMostFrequentUserView
+                , sessionTypeNameSurnameOfMostFrequentMaleUserView
+                , sessionTypeNameSurnameOfMostFrequentFemaleUserView
+                , availableMappedIdsView);
 
         Properties properties = new Properties();
 
