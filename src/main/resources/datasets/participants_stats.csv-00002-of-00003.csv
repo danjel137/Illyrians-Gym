@@ -1,0 +1,3 @@
+id,sessionType,minNumParticipants,maxNumParticipants,medianNumParticipants,averageNumParticipants,mostFrequentGender,mostFrequentPersonNameSurname,mostFrequentMaleNameSurname,mostFrequentFemaleNameSurname,resultDay
+1,Fartlek,7,20,15.0,14.0,M,Blanca,Girvan,Ermengarde,Sculley,null,12/01/2023 11:41
+4,Crossfit,5,16,15.0,12.166666666666666,F,Kitti,Stebbings,Pammie,Eslemont,null,12/01/2023 11:41

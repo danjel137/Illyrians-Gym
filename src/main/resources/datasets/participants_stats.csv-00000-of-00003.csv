@@ -1,0 +1,2 @@
+id,sessionType,minNumParticipants,maxNumParticipants,medianNumParticipants,averageNumParticipants,mostFrequentGender,mostFrequentPersonNameSurname,mostFrequentMaleNameSurname,mostFrequentFemaleNameSurname,resultDay
+2,Endurance,15,20,20.0,16.166666666666668,M,Helenelizabeth,Ligoe,Ailis,Priter,null,12/01/2023 11:41

@@ -1,0 +1,2 @@
+id,sessionType,minNumParticipants,maxNumParticipants,medianNumParticipants,averageNumParticipants,mostFrequentGender,mostFrequentPersonNameSurname,mostFrequentMaleNameSurname,mostFrequentFemaleNameSurname,resultDay
+3,YOGA,11,30,11.0,21.0,M,Vincents,Dell,Cheryl,Broune,null,12/01/2023 11:41
