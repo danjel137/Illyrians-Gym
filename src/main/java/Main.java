@@ -9,11 +9,10 @@ import model.analytics.db.ParticipantsStatistics;
 import model.analytics.db.StarRatingStatisticsPerMonth;
 import model.operational.db.*;
 import model.utilities.UserCoder;
-import org.apache.beam.runners.dataflow.DataflowRunner;
-import org.apache.beam.runners.dataflow.options.DataflowPipelineOptions;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.coders.KvCoder;
 import org.apache.beam.sdk.coders.StringUtf8Coder;
+import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.transforms.*;
 import org.apache.beam.sdk.values.KV;
@@ -36,15 +35,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Main {
     public static void main(String[] args) {
 
-        final DataflowPipelineOptions options = PipelineOptionsFactory.as(DataflowPipelineOptions.class);
-        options.setProject("illyrians-gym-project");
-        options.setGcpTempLocation("gs://gcf-v2-sources-832801291670-europe-central2/temp");
-        options.setRegion("europe-west2");
-        options.setJobName("GymProjectPipelines");
+        PipelineOptions options = PipelineOptionsFactory.create();
 
         Pipeline pipeline = Pipeline.create(options);
-
-        //Data insertion into application
 
         PCollection<Session> sessions = pipeline.apply(GetAllFromSessionTable.getTransform())
                 .apply(ParDo.of(new FilterValidSessionRecordsFn()));
@@ -57,7 +50,6 @@ public class Main {
 
         PCollection<UserSession> userSessions = pipeline.apply(GetAllFromUserSessionTable.getTransform());
 
-        //reading  available ids from json and creating the view
         Map<String, AtomicInteger> idAvailableValues = JsonDictionaryWithAvailableIds.getJsonObjectWithIdsAsMap();
 
         PCollectionView<Map<String, AtomicInteger>> availableMappedIdsView = pipeline
