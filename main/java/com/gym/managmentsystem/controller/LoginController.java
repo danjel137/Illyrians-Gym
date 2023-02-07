@@ -1,0 +1,81 @@
+package com.gym.managmentsystem.controller;
+
+import com.gym.managmentsystem.service.IClientsService;
+import com.gym.managmentsystem.service.IManagerService;
+import com.gym.managmentsystem.dto.LoginDto;
+import com.gym.managmentsystem.model.ManagerModel;
+import com.gym.managmentsystem.model.ClientsModel;
+import com.gym.managmentsystem.model.TrainersModel;
+import com.gym.managmentsystem.service.ITrainersService;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.List;
+
+@Controller
+@RequestMapping(value = "/login")
+public class LoginController {
+    IClientsService clientsService;
+    IManagerService managerService;
+    ITrainersService trainerService;
+
+    public LoginController(IClientsService clientsService, IManagerService managerService, ITrainersService trainerService) {
+        this.clientsService = clientsService;
+        this.managerService = managerService;
+        this.trainerService = trainerService;
+    }
+
+
+    @GetMapping(value = "/getLogin")
+    public String login(Model model, @ModelAttribute("login") LoginDto loginDto) {
+        model.addAttribute("login", loginDto);
+        return "login";
+    }
+
+
+    @PostMapping(value = "/postlogin")
+    public String login(@ModelAttribute LoginDto loginDto, HttpSession session, HttpServletResponse response) {
+
+
+        if (loginDto.getRole().equals("client")) {
+            List<ClientsModel> clientList = clientsService.getAllClients();
+            for (ClientsModel clientsModel : clientList) {
+                if (clientsModel.getTcNumber().equals(loginDto.getTcNo()) && clientsModel.getPassword().equals(loginDto.getPassword())) {
+                    session.setAttribute("client", clientsModel);
+                    return "redirect:/client/getClientPage";
+                }
+            }
+        } else if (loginDto.getRole().equals("trainer")) {
+            List<TrainersModel> trainerList = trainerService.getAllTrainers();
+            for (TrainersModel trainersModel : trainerList) {
+                if (trainersModel.getTcNumber().equals(loginDto.getTcNo()) && trainersModel.getPassword().equals(loginDto.getPassword())) {
+                    session.setAttribute("trainer", trainersModel);
+                    return "redirect:/trainer/getTrainerPage";
+                }
+            }
+        } else if (loginDto.getRole().equals("admin")) {
+            List<ManagerModel> managerList = managerService.getAllManager();
+            for (ManagerModel managerModel : managerList) {
+                if (managerModel.getTcNumber().equals(loginDto.getTcNo()) && managerModel.getManagerPassword().equals(loginDto.getPassword())) {
+                    session.setAttribute("admin", managerModel);
+                    return "redirect:/management/getManagemetPage";
+                }
+            }
+        }
+        return "redirect:/login/getLogin";
+    }
+
+    @GetMapping(value = "/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/login/getLogin";
+    }
+
+    @GetMapping(value = "/Authorization")
+    public String getAuthErrorPage() {
+        return "authErrorPage";
+    }
+}

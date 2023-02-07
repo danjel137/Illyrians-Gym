@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      layout:decorator="trainerLayout">
+
+<head>
+    <title>Management Update Client </title>
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous">
+</head>
+<body>
+<div layout:fragment="mycontent">
+    <!-- Create HTML registration form -->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+
+                <!-- success message -->
+                <div th:if="${param.success}">
+                    <div class="alert alert-info">You've successfully registered
+                        to our awesome app!
+                    </div>
+                </div>
+
+                <h1>Client Update</h1>
+
+                <form th:action="@{/trainer/postClientInfoUpdate}" method="POST" th:object="${clientInfoModel}">
+
+                    <div class="form-group">
+                        <label> Session Name </label>
+                        <input
+                                type="text"
+                                th:value="*{sessionName}"
+                                class="form-control"
+                                autofocus="autofocus" disabled/>
+                    </div>
+
+                    <div class="form-group">
+                        <label> Day of Week </label>
+                        <input
+                                type="text"
+                                name="day_of_week"
+                                th:value="*{day_of_week}"
+                                class="form-control"
+                                required autofocus="autofocus"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label> Duration in Minute </label>
+                        <input
+                                type="text"
+                                name="duration_in_minute"
+                                th:value="*{duration_in_minute}"
+                                class="form-control"
+                                required autofocus="autofocus"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label> Training Description</label>
+                        <input
+                                type="text"
+                                name="training_description"
+                                th:value="*{training_description}"
+                                class="form-control"
+                                required autofocus="autofocus"/>
+                    </div>
+
+                    <div class="form-group">
+                        <input
+                                type="hidden"
+                                name="trainerId"
+                                th:value="*{trainerId}"
+                                class="form-control"
+                                autofocus="autofocus"/>
+
+                    </div>
+                    <div class="form-group">
+                        <input
+                                type="hidden"
+                                name="clientInfoId"
+                                th:value="*{clientInfoId}"
+                                class="form-control"
+                                autofocus="autofocus"/>
+
+                    </div>
+                    <div class="form-group">
+
+                        <input
+                                type="hidden"
+                                name="sessionName"
+                                th:value="*{sessionName}"
+                                class="form-control"
+                                required autofocus="autofocus"  />
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success">Update</button>
+                        <span><a th:href="@{/trainer/getClientInfoPage/{client_id}(client_id=*{clientsModel.clientId})}">Previous</a></span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+</html>
